@@ -16,6 +16,7 @@ def main():
     list_widget = StatusList(None, [TaskContent("Test TItle", "Test Text")]*3)
     main_window.setCentralWidget(list_widget)
 
+    main_window.setMinimumSize(1800, 1000)
     main_window.show()
     sys.exit(app.exec_())
 
