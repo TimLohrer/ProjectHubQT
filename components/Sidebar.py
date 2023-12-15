@@ -10,11 +10,19 @@ class Sidebar(QFrame):
         """
 		super().__init__() # init QWidget (parent class)
 
+        # configuring self ...
 		self.setObjectName("sidebar")
-		self.setFixedWidth(150)
+
+        # creating elements
+		main_layout = QVBoxLayout(self)
 
 		title_label = QLabel("ProjectHub")
 
-		layout = QVBoxLayout(self)
-		layout.setAlignment(Qt.AlignTop)
-		layout.addWidget(title_label)
+        # configuring the elements
+		main_layout.setAlignment(Qt.AlignTop)
+
+		# adding projects
+		main_layout.addWidget(title_label)
+
+		for project in projects:
+			main_layout.addWidget(project)

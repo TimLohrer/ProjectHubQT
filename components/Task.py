@@ -9,23 +9,24 @@ class Task(QFrame):
 		"""
         super().__init__() # init QWidget (parent class)
 
+        # configuring self ...
         self.setObjectName("task")
         self.setFixedSize(330, 100)
+        self.setStyleSheet("QFrame#task { background-color: lightblue; border-radius: 5px; }")
+
+        # creating elements
+        main_layout = QVBoxLayout(self)
 
         title_label = QLabel(title)
-        title_label.setObjectName("title")
         description_label = QLabel(description)
-        description_label.setObjectName("description")
 
+        # configuring the elements
+        main_layout.setAlignment(Qt.AlignTop)
+        # main_layout.setContentsMargins(10, 10, 10, 10)
+        # main_layout.setSpacing(50)
         title_label.setStyleSheet("QLabel#title { color: white; font-size: 16px; font-weight: bold; }")
         description_label.setStyleSheet("QLabel#description { color: white; font-size: 16px; font-weight: bold; }")
 
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignTop)
-        layout.addWidget(title_label)
-        layout.addWidget(description_label)
-
-        # layout.setContentsMargins(10, 10, 10, 10)
-        # layout.setSpacing(50)
-
-        self.setStyleSheet("QFrame#task { background-color: lightblue; border-radius: 5px; }")
+        # adding tasks
+        main_layout.addWidget(title_label)
+        main_layout.addWidget(description_label)

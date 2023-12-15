@@ -10,19 +10,25 @@ class List(QWidget):
         """
         super().__init__() # init QWidget (parent class)
 
+        # configuring self ...
+        self.setObjectName("list")
+
+        # creating elements
+        main_layout = QVBoxLayout(self)
         scroll_area = QScrollArea(self)
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setFixedWidth(350)
 
         container_widget = QWidget(scroll_area)
         container_layout = QVBoxLayout(container_widget)
+
+        # configuring the elements
+        main_layout.setAlignment(Qt.AlignTop)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFixedWidth(350)
         container_layout.setAlignment(Qt.AlignTop)
+
+        # adding tasks
+        main_layout.addWidget(scroll_area)
 
         for task in tasks:
             container_layout.addWidget(task)
 
-        scroll_area.setWidget(container_widget)
-
-        main_layout = QVBoxLayout(self)
-        main_layout.setAlignment(Qt.AlignTop)
-        main_layout.addWidget(scroll_area)
