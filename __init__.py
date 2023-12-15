@@ -1,2 +1,5 @@
-from components.StatusList import StatusList
-from components.Task import Task
+# visual components
+from components.sidebar import Sidebar
+from components.list import List
+from components.project import Project
+from components.task import Task

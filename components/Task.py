@@ -2,8 +2,12 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
 class Task(QFrame):
-    def __init__(self, title, description, parent=None):
-        super().__init__(parent)
+    def __init__(self, title, description):
+        """This is a standart ProjectHub visual task element.
+
+			Args:
+		"""
+        super().__init__() # init QWidget (parent class)
 
         self.setObjectName("task")
         self.setFixedSize(330, 100)

@@ -1,10 +1,14 @@
 from PyQt5.QtWidgets import *
-from components.Task import Task
 from PyQt5.QtCore import Qt
 
-class StatusList(QWidget):
-    def __init__(self, parent=None, tasks=[]):
-        super().__init__(parent)
+class List(QWidget):
+    def __init__(self, tasks=[]):
+        """This is a standart ProjectHub visual list element.
+
+            Args:
+                task (list<Task>) (=[<empty list>])
+        """
+        super().__init__() # init QWidget (parent class)
 
         scroll_area = QScrollArea(self)
         scroll_area.setWidgetResizable(True)
@@ -15,8 +19,7 @@ class StatusList(QWidget):
         container_layout.setAlignment(Qt.AlignTop)
 
         for task in tasks:
-            rounded_box = Task(task.title, task.description)
-            container_layout.addWidget(rounded_box)
+            container_layout.addWidget(task)
 
         scroll_area.setWidget(container_widget)
 

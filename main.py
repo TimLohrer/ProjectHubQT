@@ -1,24 +1,47 @@
+# native libaries
 import sys
-from PyQt5.QtWidgets import *
 
+# all further libaries (even if not used in this file)
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import Qt
+
+# porject inter import
 from __init__ import *
 
-class TaskContent():
-    def __init__(self, title, description):
-        self.title = title
-        self.description = description
-
-
 def main():
-    app = QApplication(sys.argv)
-    main_window = QMainWindow()
-    
-    list_widget = StatusList(None, [TaskContent("Test TItle", "Test Text")]*3)
-    main_window.setCentralWidget(list_widget)
+    """Mainloop of the pyqt5 based ProjectHub project-managing software"""
 
-    main_window.setMinimumSize(1800, 1000)
+    # application and window built
+    application = QApplication(sys.argv)
+    main_window = QMainWindow()
+
+    central_widget  = QWidget()
+    horizontal_layout = QHBoxLayout()
+
+    # window conf
+    main_window.resize(1170, 690)
+    main_window.setWindowTitle("ProjectHub")
+
+    # creating elements
+    sidebar = Sidebar()
+    list_widget_0 = List()
+    list_widget_1 = List()
+    list_widget_2 = List()
+
+    # adding elements
+    main_window.setCentralWidget(central_widget)
+    central_widget.setLayout(horizontal_layout)
+
+    horizontal_layout.addWidget(sidebar)
+    horizontal_layout.addWidget(list_widget_0)
+    horizontal_layout.addWidget(list_widget_1)
+    horizontal_layout.addWidget(list_widget_2)
+
+    # display window
     main_window.show()
-    sys.exit(app.exec_())
+
+    # application exit ...
+    sys.exit(application.exec_())
 
 if __name__ == '__main__':
     main()

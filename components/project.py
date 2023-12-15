@@ -1,16 +1,15 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
-class Sidebar(QFrame):
-	def __init__(self, projects=[]):
-		"""This is a standart ProjectHub visual sidebar element.
+class Project(QFrame):
+	def __init__(self):
+		"""This is a standart ProjectHub visual project element.
 
-            Args:
-                projects (list<Projects>) (=[<empty list>])
-        """
+			Args:
+		"""
 		super().__init__() # init QWidget (parent class)
 
-		self.setObjectName("sidebar")
+		self.setObjectName("project")
 		self.setFixedWidth(150)
 
 		title_label = QLabel("ProjectHub")
