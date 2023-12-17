@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
-class List(QWidget):
+class TaskList(QWidget):
     def __init__(self, tasks=[]):
         """This is a standart ProjectHub visual list element.
 
