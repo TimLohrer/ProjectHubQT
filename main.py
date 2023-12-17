@@ -26,7 +26,7 @@ class Window(QMainWindow):
 
         # configuring self ...
         self.setObjectName("window")
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint) # removes default title bar
+        # self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
         self.resize(1800, 900)
 
@@ -37,11 +37,7 @@ class Window(QMainWindow):
         self.horizontal_layout = QHBoxLayout()
         self.popup             = QWidget()
 
-<<<<<<< Updated upstream
-        self.title_bar = TitleBar(self)
-=======
         # self.title_bar = TitleBar()
->>>>>>> Stashed changes
         self.sidebar = Sidebar(fetch_projects(PROJECT_ID))
         self.list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, status=Status.BACKLOG, show_popup=self.show_popup))
         self.list_widget_1 = TaskList("TODO",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.TODO, show_popup=self.show_popup))
