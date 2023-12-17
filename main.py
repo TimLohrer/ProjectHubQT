@@ -12,9 +12,9 @@ def fetch_projects(active_project_id) -> list:
     # convert each item from database into pyhton object
     return [Project(project[1], project[2], project[0] == active_project_id) for project in db_handler.projects.fetch_all()]
 
-def fetch_tasks(user_id: int, project_id: int, status: str) -> list:
+def fetch_tasks(user_id: int, project_id: int, status: str, show_popup) -> list:
     # convert each item from database into pyhton object
-    return [Task(task[4], task[5]) for task in db_handler.tasks.fetch_condition(user_id, project_id, status)]
+    return [Task(task[4], task[5], show_popup) for task in db_handler.tasks.fetch_condition(user_id, project_id, status)]
 
 class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""
@@ -22,7 +22,7 @@ class Window(QMainWindow):
         super().__init__()
         # === TEMP === (subject of change)
         USER_ID = 1
-        PROJECT_ID = 2
+        PROJECT_ID = 1
 
         # configuring self ...
         self.setObjectName("window")
@@ -35,13 +35,18 @@ class Window(QMainWindow):
         self.vertical_layout   = QVBoxLayout()
         self.central_widget    = QWidget()
         self.horizontal_layout = QHBoxLayout()
+        self.popup             = QWidget()
 
+<<<<<<< Updated upstream
         self.title_bar = TitleBar(self)
+=======
+        # self.title_bar = TitleBar()
+>>>>>>> Stashed changes
         self.sidebar = Sidebar(fetch_projects(PROJECT_ID))
-        self.list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, status=Status.BACKLOG))
-        self.list_widget_1 = TaskList("TODO",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.TODO))
-        self.list_widget_2 = TaskList("IN PROGRESS", fetch_tasks(USER_ID, PROJECT_ID, status=Status.IN_PROGRESS))
-        self.list_widget_3 = TaskList("DONE",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.DONE))
+        self.list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, status=Status.BACKLOG, show_popup=self.show_popup))
+        self.list_widget_1 = TaskList("TODO",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.TODO, show_popup=self.show_popup))
+        self.list_widget_2 = TaskList("IN PROGRESS", fetch_tasks(USER_ID, PROJECT_ID, status=Status.IN_PROGRESS, show_popup=self.show_popup))
+        self.list_widget_3 = TaskList("DONE",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.DONE, show_popup=self.show_popup))
 
         # configuring new elements
         self.vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -52,7 +57,7 @@ class Window(QMainWindow):
         self.central_widget.setLayout(self.horizontal_layout)
 
         # adding: titlebar and workspace
-        self.vertical_layout.addWidget(self.title_bar)
+        # self.vertical_layout.addWidget(self.title_bar)
         self.vertical_layout.addWidget(self.central_widget)
 
         # adding: sidebar
@@ -66,7 +71,15 @@ class Window(QMainWindow):
 
         # styling
         self.setStyleSheet(f"margin: 0px; padding: 0px; border: 0px; outline: 0px; background-color: { Colors.background }; color: white;")
+        self.setStyleSheet("QWidget#popup { position: absolute; left: 50%; top: 50%; }")
 
+    def show_popup(self, popup):
+        self.hide_popup()
+        self.popup = popup
+        self.vertical_layout.addWidget(self.popup)
+
+    def hide_popup(self):
+        self.popup.hide()
 
 def main():
     """Mainloop of the pyqt5 based ProjectHub project-managing software"""

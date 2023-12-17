@@ -1,39 +1,35 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from config.Colors import Colors
-import math
-from components.TaskDetails import TaskDetails
+from database.handler import DatabaseHandler
 
-class Task(QFrame):
-    def __init__(self, title, description, show_popup):
+class TaskDetails(QWidget):
+    def __init__(self, title, description):
         """This is a standart ProjectHub visual task element.
 
 			Args:
 		"""
         super().__init__() # init QWidget (parent class)
 
+        self.db_hander = DatabaseHandler("__database__/database.db")
+
         # configuring self ...
-        self.setObjectName("task")
+        self.setObjectName("popup")
         self.setFixedSize(330, 100)
         self.setStyleSheet(f"background-color: {Colors.blue}; border-radius: 5px;")
-        self.show_popup = show_popup
 
         # creating elements
         self.main_layout = QVBoxLayout()
         self.title_label = QLabel(title)
         self.description_label = QLabel(description)
-        self.details = TaskDetails("TEST", "ABC")
 
         # configuring the elements
         self.main_layout.setAlignment(Qt.AlignTop)
+
+        # styling
+        self.setStyleSheet("QWidget#popup { position: absolute; left: 50%; top: 50%; }")
 
         # adding elements
         self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.title_label)
         self.main_layout.addWidget(self.description_label)
-
-    def show_details(self):
-        self.show_popup(self.details)
-
-    def mousePressEvent(self, event):
-        self.show_details()
