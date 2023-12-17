@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+from config.Colors import Colors
 
 class Task(QFrame):
     def __init__(self, title, description):
@@ -12,7 +13,7 @@ class Task(QFrame):
         # configuring self ...
         self.setObjectName("task")
         self.setFixedSize(330, 100)
-        self.setStyleSheet("QFrame#task { background-color: lightblue; border-radius: 5px; }")
+        self.setStyleSheet("QFrame#task { background-color: ; border-radius: 5px; }")
 
         # creating elements
         main_layout = QVBoxLayout(self)
@@ -24,8 +25,6 @@ class Task(QFrame):
         main_layout.setAlignment(Qt.AlignTop)
         # main_layout.setContentsMargins(10, 10, 10, 10)
         # main_layout.setSpacing(50)
-        title_label.setStyleSheet("QLabel#title { color: white; font-size: 16px; font-weight: bold; }")
-        description_label.setStyleSheet("QLabel#description { color: white; font-size: 16px; font-weight: bold; }")
 
         # adding tasks
         main_layout.addWidget(title_label)

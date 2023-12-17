@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
 class TaskList(QWidget):
-    def __init__(self, tasks=[]):
+    def __init__(self, name, tasks=[]):
         """This is a standart ProjectHub visual list element.
 
             Args:
@@ -17,6 +17,7 @@ class TaskList(QWidget):
         main_layout = QVBoxLayout(self)
         scroll_area = QScrollArea(self)
 
+        list_title = QLabel(name)
         container_widget = QWidget(scroll_area)
         container_layout = QVBoxLayout(container_widget)
 
@@ -26,7 +27,8 @@ class TaskList(QWidget):
         scroll_area.setFixedWidth(350)
         container_layout.setAlignment(Qt.AlignTop)
 
-        # adding tasks
+        # adding widgets
+        main_layout.addWidget(list_title)
         main_layout.addWidget(scroll_area)
 
         for task in tasks:

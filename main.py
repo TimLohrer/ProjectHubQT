@@ -35,10 +35,10 @@ def main():
 
     # creating elements
     sidebar = Sidebar(fetch_projects())
-    list_widget_0 = TaskList(fetch_tasks(USER_ID, PROJECT_ID, list_type="BACK")) # BACK = backlog
-    list_widget_1 = TaskList(fetch_tasks(USER_ID, PROJECT_ID, list_type="TODO")) #_TODO = todo
-    list_widget_2 = TaskList(fetch_tasks(USER_ID, PROJECT_ID, list_type="INPR")) # INPR = in progress
-    list_widget_3 = TaskList(fetch_tasks(USER_ID, PROJECT_ID, list_type="DONE")) # DONE = done
+    list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, list_type="BACK")) # BACK = backlog
+    list_widget_1 = TaskList("TODO", fetch_tasks(USER_ID, PROJECT_ID, list_type="TODO")) #_TODO = todo
+    list_widget_2 = TaskList("IN PROGRESS", fetch_tasks(USER_ID, PROJECT_ID, list_type="INPR")) # INPR = in progress
+    list_widget_3 = TaskList("DONE", fetch_tasks(USER_ID, PROJECT_ID, list_type="DONE")) # DONE = done
 
     # adding elements
     main_window.setCentralWidget(central_widget)

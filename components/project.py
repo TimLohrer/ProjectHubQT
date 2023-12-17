@@ -11,7 +11,7 @@ class Project(QFrame):
 
         # configuring self ...
 		self.setObjectName("project")
-		self.setFixedWidth(150)
+		self.setFixedWidth(165)
 
         # creating elements
 		main_layout = QVBoxLayout(self)
