@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+from config.Colors import Colors
 
 class TaskList(QWidget):
     def __init__(self, name, tasks=[]):
@@ -26,6 +27,9 @@ class TaskList(QWidget):
         scroll_area.setWidgetResizable(True)
         scroll_area.setFixedWidth(350)
         container_layout.setAlignment(Qt.AlignTop)
+
+        # styling
+        scroll_area.setStyleSheet(f"background-color: { Colors.second_background }; border-radius: 7.5px")
 
         # adding widgets
         main_layout.addWidget(list_title)

@@ -8,47 +8,71 @@ from PyQt5.QtCore import Qt
 # porject inter import
 from __init__ import *
 
-def fetch_projects() -> list:
+def fetch_projects(active_project_id) -> list:
     # convert each item from database into pyhton object
-    return [Project(project[1], project[2]) for project in db_handler.projects.fetch_all()]
+    return [Project(project[1], project[2], project[0] == active_project_id) for project in db_handler.projects.fetch_all()]
 
-def fetch_tasks(user_id: int, project_id: int, list_type: str) -> list:
+def fetch_tasks(user_id: int, project_id: int, status: str) -> list:
     # convert each item from database into pyhton object
-    return [Task(task[4], task[5]) for task in db_handler.tasks.fetch_condition(user_id, project_id, list_type)]
+    return [Task(task[4], task[5]) for task in db_handler.tasks.fetch_condition(user_id, project_id, status)]
+
+class Window(QMainWindow):
+    """This is a standart ProjectHub visual window element."""
+    def __init__(self):
+        super().__init__()
+        # === TEMP === (subject of change)
+        USER_ID = 1
+        PROJECT_ID = 2
+
+        # configuring self ...
+        self.setObjectName("window")
+        # self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+
+        self.resize(1800, 900)
+
+        # creating elements
+        self.window_widget     = QWidget()
+        self.vertical_layout   = QVBoxLayout()
+        self.central_widget    = QWidget()
+        self.horizontal_layout = QHBoxLayout()
+
+        self.title_bar = TitleBar()
+        self.sidebar = Sidebar(fetch_projects(PROJECT_ID))
+        self.list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, status=Status.BACKLOG))
+        self.list_widget_1 = TaskList("TODO",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.TODO))
+        self.list_widget_2 = TaskList("IN PROGRESS", fetch_tasks(USER_ID, PROJECT_ID, status=Status.IN_PROGRESS))
+        self.list_widget_3 = TaskList("DONE",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.DONE))
+
+        # configuring new elements
+        self.vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        # adding elements
+        self.setCentralWidget(self.window_widget)
+        self.window_widget.setLayout(self.vertical_layout)
+        self.central_widget.setLayout(self.horizontal_layout)
+
+        # adding: titlebar and workspace
+        self.vertical_layout.addWidget(self.title_bar)
+        self.vertical_layout.addWidget(self.central_widget)
+
+        # adding: sidebar
+        self.horizontal_layout.addWidget(self.sidebar)
+
+        # adding: columns
+        self.horizontal_layout.addWidget(self.list_widget_0)
+        self.horizontal_layout.addWidget(self.list_widget_1)
+        self.horizontal_layout.addWidget(self.list_widget_2)
+        self.horizontal_layout.addWidget(self.list_widget_3)
+
+        # styling
+        self.setStyleSheet(f"margin: 0px; padding: 0px; border: 0px; outline: 0px; background-color: { Colors.background }; color: white;")
+
 
 def main():
     """Mainloop of the pyqt5 based ProjectHub project-managing software"""
-    # === IMPORTANT ===
-    USER_ID = 1
-    PROJECT_ID = 1
-
     # application and window built
     application = QApplication(sys.argv)
-    main_window = QMainWindow()
-
-    horizontal_layout = QHBoxLayout()
-    central_widget = QWidget()
-
-    # window conf
-    main_window.resize(1800, 900)
-    main_window.setWindowTitle("ProjectHub")
-
-    # creating elements
-    sidebar = Sidebar(fetch_projects())
-    list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, list_type="BACK")) # BACK = backlog
-    list_widget_1 = TaskList("TODO", fetch_tasks(USER_ID, PROJECT_ID, list_type="TODO")) #_TODO = todo
-    list_widget_2 = TaskList("IN PROGRESS", fetch_tasks(USER_ID, PROJECT_ID, list_type="INPR")) # INPR = in progress
-    list_widget_3 = TaskList("DONE", fetch_tasks(USER_ID, PROJECT_ID, list_type="DONE")) # DONE = done
-
-    # adding elements
-    main_window.setCentralWidget(central_widget)
-    central_widget.setLayout(horizontal_layout)
-
-    horizontal_layout.addWidget(sidebar)
-    horizontal_layout.addWidget(list_widget_0)
-    horizontal_layout.addWidget(list_widget_1)
-    horizontal_layout.addWidget(list_widget_2)
-    horizontal_layout.addWidget(list_widget_3)
+    main_window = Window()
 
     # display window
     main_window.show()

@@ -1,7 +1,6 @@
 class Colors():
-    def __init__(self):
-        self.blue = "#4464AD"
-        self.green = "#44CF6C"
-        self.red = "#FF3B2F"
-        self.background = "#2B2D31"
-        self.second_background = "#1E1F22"
+    blue = "#4464AD"
+    green = "#44CF6C"
+    red = "#FF3B2F"
+    background = "#2B2D31"
+    second_background = "#222326"

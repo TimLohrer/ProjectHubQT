@@ -13,19 +13,17 @@ class Task(QFrame):
         # configuring self ...
         self.setObjectName("task")
         self.setFixedSize(330, 100)
-        self.setStyleSheet("QFrame#task { background-color: ; border-radius: 5px; }")
+        self.setStyleSheet(f"background-color: {Colors.blue}; border-radius: 5px;")
 
         # creating elements
-        main_layout = QVBoxLayout(self)
-
-        title_label = QLabel(title)
-        description_label = QLabel(description)
+        self.main_layout = QVBoxLayout()
+        self.title_label = QLabel(title)
+        self.description_label = QLabel(description)
 
         # configuring the elements
-        main_layout.setAlignment(Qt.AlignTop)
-        # main_layout.setContentsMargins(10, 10, 10, 10)
-        # main_layout.setSpacing(50)
+        self.main_layout.setAlignment(Qt.AlignTop)
 
-        # adding tasks
-        main_layout.addWidget(title_label)
-        main_layout.addWidget(description_label)
+        # adding elements
+        self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.title_label)
+        self.main_layout.addWidget(self.description_label)

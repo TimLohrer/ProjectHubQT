@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
-from config.Color import Colors
+from config.Colors import Colors
 
 class Sidebar(QFrame):
 	def __init__(self, projects=[]):
@@ -27,13 +27,13 @@ class Sidebar(QFrame):
         # configuring the elements
 		main_layout.setAlignment(Qt.AlignTop)
 		scroll_area.setWidgetResizable(True)
-		scroll_area.setFixedWidth(170)
+		scroll_area.setFixedWidth(200)
 		scroll_area.setMinimumHeight(350)
 
 		#styling
-		title_label.setStyleSheet("font-size: 28px; font-weight: bold; margin-bottom: 10px")
-		create_task_button.setStyleSheet("background-color: " + Colors.green + "; border-radius: 5px; padding: 10px")
-		scroll_area.setStyleSheet("border: 0px, background-color: transparent")
+		title_label.setStyleSheet(f"color: { Colors.blue }; font-size: 30px; font-weight: bold; margin-bottom: 10px;")
+		create_task_button.setStyleSheet(f"background-color: { Colors.green }; color: { Colors.background }; font-weight: bold; border-radius: 5px; padding: 10px;")
+		scroll_area.setStyleSheet("QScrollArea { margin-top: 10px; }")
 
 		# adding projects
 		main_layout.addWidget(title_label)

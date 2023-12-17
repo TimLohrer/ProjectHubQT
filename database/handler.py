@@ -82,18 +82,18 @@ class Tasks():
     def __init__(self, db_handler):
         self.db_handler = db_handler
 
-    def fetch_condition(self, user_id: int, project_id: int, list_type: str):
+    def fetch_condition(self, user_id: int, project_id: int, status: str):
         # securing each element which has the slightest possibility of being messed with
         secure_user_id = self.db_handler.secure(str(user_id))
         secure_project_id = self.db_handler.secure(str(project_id))
-        secure_list_type = self.db_handler.secure(list_type)
+        secure_status = self.db_handler.secure(status)
 
         # query
         answer = self.db_handler.query(f"""
             SELECT * FROM Task WHERE
                 (reporterID = {secure_user_id} OR asigneeId = {secure_user_id})
                 AND projectID = {secure_project_id}
-                AND type = '{secure_list_type}';
+                AND status = '{secure_status}';
             """)
 
         # return answer if correct else empty list
