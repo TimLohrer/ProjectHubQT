@@ -1,4 +1,5 @@
 import sqlite3
+from config.structs import *
 
 class DatabaseHandler():
     def __init__(self, path_to_sqlite: str):
@@ -76,7 +77,7 @@ class Projects():
         # query
         answer = self.db_handler.query("SELECT * FROM Project;")
         # return answer if correct else empty list
-        return answer[1] if answer[0] else []
+        return [ProjectStruct(project) for project in answer[1]] if answer[0] else []
 
 class Tasks():
     def __init__(self, db_handler):
@@ -97,7 +98,7 @@ class Tasks():
             """)
 
         # return answer if correct else empty list
-        return answer[1] if answer[0] else []
+        return [TaskStruct(task) for task in answer[1]] if answer[0] else []
 
 
 

@@ -1,4 +1,5 @@
-# inspired by https://stackoverflow.com/questions/9377914/how-to-customize-title-bar-and-window-of-desktop-application and https://www.pythonguis.com/tutorials/custom-title-bar-pyqt6/
+# inspired by https://stackoverflow.com/questions/9377914/how-to-customize-title-bar-and-window-of-desktop-application
+#  and https://www.pythonguis.com/tutorials/custom-title-bar-pyqt6/
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
@@ -7,7 +8,7 @@ from PyQt5.QtGui import QIcon
 from config.Colors import Colors
 
 class TitleBar(QWidget):
-    def __init__(self, window):
+    def __init__(self, window, title = "ProjectHub", enable_minimize = True, enable_maximize = True, enable_close = True):
         super().__init__()
         self.window = window
 
@@ -17,7 +18,7 @@ class TitleBar(QWidget):
 
         # creating elements
         self.horizontal_layout = QHBoxLayout()
-        self.title = QLabel("ProjectHub")
+        self.title = QLabel(title)
         # action buttons
         self.min_button = QToolButton()
         self.nor_button = QToolButton()
@@ -38,18 +39,21 @@ class TitleBar(QWidget):
         # adding element
         self.setLayout(self.horizontal_layout)
         self.horizontal_layout.addWidget(self.title)
-        self.horizontal_layout.addWidget(self.min_button)
-        self.horizontal_layout.addWidget(self.nor_button)
-        self.horizontal_layout.addWidget(self.close_button)
+        if enable_minimize:
+            self.horizontal_layout.addWidget(self.min_button)
+        if enable_maximize:
+            self.horizontal_layout.addWidget(self.nor_button)
+        if enable_close:
+            self.horizontal_layout.addWidget(self.close_button)
 
         # styling
-        self.setStyleSheet(f"background-color: { Colors.second_background };")
+        self.setStyleSheet(f"background-color: { Colors.second_background }; padding: 0px; border: 4px solid { Colors.second_background }")
 
-        self.title.setStyleSheet("font-weight: bold;")
+        self.title.setStyleSheet("font-weight: w600;")
 
-        self.min_button.setStyleSheet("""QToolButton { border: 2px solid white; border-radius: 12px; } """)
-        self.nor_button.setStyleSheet("""QToolButton { border: 2px solid white; border-radius: 12px; } """)
-        self.close_button.setStyleSheet("""QToolButton { border: 2px solid white; border-radius: 12px; } """)
+        self.min_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
+        self.nor_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
+        self.close_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
 
     def window_show_minimized(self):
         self.window.showMinimized()
@@ -86,4 +90,3 @@ class TitleBar(QWidget):
                 self.nor_button.setIcon(QIcon('assets/max.png'))
 
             event.accept() # stops from preventing further events
-

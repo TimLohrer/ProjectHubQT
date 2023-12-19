@@ -5,7 +5,7 @@ import math
 from components.TaskDetails import TaskDetails
 
 class Task(QFrame):
-    def __init__(self, title, description, show_popup):
+    def __init__(self, task):
         """This is a standart ProjectHub visual task element.
 
 			Args:
@@ -16,13 +16,12 @@ class Task(QFrame):
         self.setObjectName("task")
         self.setFixedSize(330, 100)
         self.setStyleSheet(f"background-color: {Colors.blue}; border-radius: 5px;")
-        self.show_popup = show_popup
 
         # creating elements
         self.main_layout = QVBoxLayout()
-        self.title_label = QLabel(title)
-        self.description_label = QLabel(description)
-        self.details = TaskDetails("TEST", "ABC")
+        self.title_label = QLabel(task.title)
+        self.description_label = QLabel(task.description)
+        self.details = TaskDetails(task)
 
         # configuring the elements
         self.main_layout.setAlignment(Qt.AlignTop)
@@ -33,7 +32,8 @@ class Task(QFrame):
         self.main_layout.addWidget(self.description_label)
 
     def show_details(self):
-        self.show_popup(self.details)
+        self.details.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.details.show()
 
     def mousePressEvent(self, event):
         self.show_details()

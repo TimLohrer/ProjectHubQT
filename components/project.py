@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from config.Colors import Colors
 
 class Project(QFrame):
-	def __init__(self, title, description, active = False):
+	def __init__(self, project, active = False):
 		"""This is a standart ProjectHub visual project element.
 
 			Args:
@@ -16,17 +16,17 @@ class Project(QFrame):
 		self.setFixedWidth(200)
 
         # creating elements
-		main_layout = QVBoxLayout(self)
+		self.main_layout = QVBoxLayout(self)
 
-		title_label = QLabel(title)
+		self.title_label = QLabel(project.name)
 
         # configuring the elements
-		main_layout.setAlignment(Qt.AlignTop)
+		self.main_layout.setAlignment(Qt.AlignTop)
 
 		# styling
 		background_color = Colors.blue if active else Colors.second_background
 		self.setStyleSheet(f"background-color: { background_color }; border-radius: 5px;")
-		title_label.setStyleSheet("font-size: 14px; font-weight: bold;")
+		self.title_label.setStyleSheet("font-size: 14px; font-weight: bold;")
 
         # adding tasks
-		main_layout.addWidget(title_label)
+		self.main_layout.addWidget(self.title_label)
