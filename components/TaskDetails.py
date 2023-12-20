@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+
 from config.Colors import Colors
 from components.TitleBar import TitleBar
 from config.Status import Status
 from config.Type import Type
 from config.Priority import Priority
 from database.handler import DatabaseHandler
+from components.EditableLabel import EditableLabel
 
 class TaskDetails(QWidget):
     def __init__(self, task):
@@ -29,8 +31,8 @@ class TaskDetails(QWidget):
         self.type_selector.addItem('Problem')
         self.type_selector.addItem('Initiative')
 
-        self.title_label = QLabel(task.title)
-        self.description_label = QLabel(task.description)
+        self.title_label = EditableLabel(task.title)
+        self.description_label = EditableLabel(task.description)
 
         self.status_selector = QComboBox(self)
         self.status_selector.addItem('Backlog')

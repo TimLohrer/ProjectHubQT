@@ -21,52 +21,65 @@ class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""
     def __init__(self):
         super().__init__()
-        # === TEMP === (subject of change)
-        USER_ID = 1
-        PROJECT_ID = 1
+        # !!! === TEMP === (subject of change)
+        self.USER_ID = 1
+        self.PROJECT_ID = 1
 
         # configuring self ...
         self.setObjectName("window")
+        self.setWindowTitle("ProjectHub")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
         self.resize(1800, 900)
 
-        # creating elements
-        self.window_widget     = QWidget()
-        self.vertical_layout   = QVBoxLayout()
-        self.central_widget    = QWidget()
-        self.horizontal_layout = QHBoxLayout()
-
-        self.title_bar = TitleBar(self)
-        self.sidebar = Sidebar(fetch_projects(PROJECT_ID))
-        self.list_widget_0 = TaskList("BACKLOG", fetch_tasks(USER_ID, PROJECT_ID, status=Status.BACKLOG))
-        self.list_widget_1 = TaskList("TODO",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.TODO))
-        self.list_widget_2 = TaskList("IN PROGRESS", fetch_tasks(USER_ID, PROJECT_ID, status=Status.IN_PROGRESS))
-        self.list_widget_3 = TaskList("DONE",    fetch_tasks(USER_ID, PROJECT_ID, status=Status.DONE))
-
-        # configuring new elements
-        self.vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        # adding elements
-        self.setCentralWidget(self.window_widget)
-        self.window_widget.setLayout(self.vertical_layout)
-        self.central_widget.setLayout(self.horizontal_layout)
-
-        # adding: titlebar and workspace
-        self.vertical_layout.addWidget(self.title_bar)
-        self.vertical_layout.addWidget(self.central_widget)
-
-        # adding: sidebar
-        self.horizontal_layout.addWidget(self.sidebar)
-
-        # adding: columns
-        self.horizontal_layout.addWidget(self.list_widget_0)
-        self.horizontal_layout.addWidget(self.list_widget_1)
-        self.horizontal_layout.addWidget(self.list_widget_2)
-        self.horizontal_layout.addWidget(self.list_widget_3)
+        self.create_ui()
 
         # styling
         self.setStyleSheet(f"margin: 0px; padding: 0px; border: 0px; outline: 0px; background-color: { Colors.background }; color: white;")
+
+    def create_ui(self):
+        # creating elements
+        window_widget     = QWidget()
+        vertical_layout   = QVBoxLayout()
+        central_widget    = QWidget()
+        horizontal_layout = QHBoxLayout()
+        title_bar         = TitleBar(self)
+        sidebar           = Sidebar(fetch_projects(self.PROJECT_ID))
+        list_widget_0     = TaskList("BACKLOG", fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.BACKLOG))
+        list_widget_1     = TaskList("TODO",    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.TODO))
+        list_widget_2     = TaskList("IN PROGRESS", fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.IN_PROGRESS))
+        list_widget_3     = TaskList("DONE",    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.DONE))
+
+        # configuring new elements
+        vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        # adding: sidebar
+        horizontal_layout.addWidget(sidebar)
+
+        # adding: columns
+        horizontal_layout.addWidget(list_widget_0)
+        horizontal_layout.addWidget(list_widget_1)
+        horizontal_layout.addWidget(list_widget_2)
+        horizontal_layout.addWidget(list_widget_3)
+
+        # adding elements
+        window_widget.setLayout(vertical_layout)
+        central_widget.setLayout(horizontal_layout)
+
+        # adding: titlebar & workspace
+        vertical_layout.addWidget(title_bar)
+        vertical_layout.addWidget(central_widget)
+
+        # saving and updating ui
+        self.setCentralWidget(window_widget)
+        self.vertical_layout   = vertical_layout
+        self.central_widget    = central_widget
+        self.horizontal_layout = horizontal_layout
+
+    def switchProject(self, new_project):
+        # !!! check if exists
+        self.PROJECT_ID = new_project
+        self.create_ui()
 
 def main():
     """Mainloop of the pyqt5 based ProjectHub project-managing software"""
