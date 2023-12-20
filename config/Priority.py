@@ -5,16 +5,38 @@ class Priority():
     HIGH = "HIGH"
     VERY_HIGH = "VERY_HIGH"
 
-    def beautify(self, priority):
-        if priority == self.VERY_HIGH:
-            return "Very High"
-        elif priority == self.HIGH:
-            return "High"
-        elif priority == self.MEDIUM:
-            return "Medium"
-        elif priority == self.LOW:
-            return "Low"
-        elif priority == self.VERY_LOW:
-            return "Very Low"
-        else:
-            return "UNKNOWN"
+    VERY_LOW_STRING = "Very Low"
+    LOW_STRING = "Low"
+    MEDIUM_STRING = "Medium"
+    HIGH_STRING = "High"
+    VERY_HIGH_STRING = "Very High"
+
+    def parse(self, status):
+        match status:
+            case self.VERY_LOW_STRING:
+                return self.VERY_LOW
+            case self.LOW_STRING:
+                return self.LOW
+            case self.MEDIUM_STRING:
+                return self.MEDIUM
+            case self.HIGH_STRING:
+                return self.HIGH
+            case self.VERY_HIGH_STRING:
+                return self.VERY_HIGH
+            case _:
+                return "UNKNOWN"
+
+    def stringify(self, status):
+        match status:
+            case self.VERY_LOW:
+                return self.VERY_LOW_STRING
+            case self.LOW:
+                return self.LOW_STRING
+            case self.MEDIUM:
+                return self.MEDIUM_STRING
+            case self.HIGH:
+                return self.HIGH_STRING
+            case self.VERY_HIGH:
+                return self.VERY_HIGH_STRING
+            case _:
+                return "UNKNOWN"

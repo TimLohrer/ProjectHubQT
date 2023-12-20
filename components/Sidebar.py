@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from config.Colors import Colors
 
 class Sidebar(QFrame):
-	def __init__(self, projects=[]):
+	def __init__(self, projects=[], switch_project=None):
 		"""This is a standart ProjectHub visual sidebar element.
 
             Args:
@@ -42,3 +42,4 @@ class Sidebar(QFrame):
 
 		for project in projects:
 			self.projects_container_layout.addWidget(project)
+			project.clicked.connect(switch_project)

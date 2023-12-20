@@ -44,11 +44,11 @@ class Window(QMainWindow):
         central_widget    = QWidget()
         horizontal_layout = QHBoxLayout()
         title_bar         = TitleBar(self)
-        sidebar           = Sidebar(fetch_projects(self.PROJECT_ID))
-        list_widget_0     = TaskList("BACKLOG", fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.BACKLOG))
-        list_widget_1     = TaskList("TODO",    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.TODO))
-        list_widget_2     = TaskList("IN PROGRESS", fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.IN_PROGRESS))
-        list_widget_3     = TaskList("DONE",    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.DONE))
+        sidebar           = Sidebar(fetch_projects(self.PROJECT_ID), self.switch_project)
+        list_widget_0     = TaskList(Status().stringify("BACKLOG").upper(), fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.BACKLOG))
+        list_widget_1     = TaskList(Status().stringify("TODO").upper(),    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.TODO))
+        list_widget_2     = TaskList(Status().stringify("IN_PROGRESS").upper(), fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.IN_PROGRESS))
+        list_widget_3     = TaskList(Status().stringify("DONE").upper(),    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.DONE))
 
         # configuring new elements
         vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -76,7 +76,7 @@ class Window(QMainWindow):
         self.central_widget    = central_widget
         self.horizontal_layout = horizontal_layout
 
-    def switchProject(self, new_project):
+    def switch_project(self, new_project):
         # !!! check if exists
         self.PROJECT_ID = new_project
         self.create_ui()

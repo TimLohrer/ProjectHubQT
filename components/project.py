@@ -1,9 +1,12 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
 from config.Colors import Colors
 
 class Project(QFrame):
+	# Create custom event emitter
+	clicked = pyqtSignal(int)
+
 	def __init__(self, project, active = False):
 		"""This is a standart ProjectHub visual project element.
 
@@ -14,6 +17,7 @@ class Project(QFrame):
         # configuring self ...
 		self.setObjectName("project")
 		self.setFixedWidth(200)
+		self.project = project
 
         # creating elements
 		self.main_layout = QVBoxLayout(self)
@@ -30,3 +34,6 @@ class Project(QFrame):
 
         # adding tasks
 		self.main_layout.addWidget(self.title_label)
+
+	def mousePressEvent(self, event):
+		self.clicked.emit(self.project.id)

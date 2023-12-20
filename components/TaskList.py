@@ -18,7 +18,7 @@ class TaskList(QWidget):
         self.main_layout = QVBoxLayout(self)
         self.scroll_area = QScrollArea(self)
 
-        self.list_title = QLabel(name)
+        self.list_title = QLabel(name + f" ({ len(tasks) })")
         self.container_widget = QWidget(self.scroll_area)
         self.container_layout = QVBoxLayout(self.container_widget)
 
