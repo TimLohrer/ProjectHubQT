@@ -17,7 +17,7 @@ class TaskDetails(QWidget):
 		"""
         super().__init__() # init QWidget (parent class)
 
-        self.db_hander = DatabaseHandler("__database__/database.db")
+        self.db_handler = DatabaseHandler("__database__/database.db")
 
         # configuring self ...
         self.setFixedSize(800, 800)

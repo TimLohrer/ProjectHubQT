@@ -44,7 +44,7 @@ class Window(QMainWindow):
         central_widget    = QWidget()
         horizontal_layout = QHBoxLayout()
         title_bar         = TitleBar(self)
-        sidebar           = Sidebar(fetch_projects(self.PROJECT_ID), self.switch_project)
+        sidebar           = Sidebar(fetch_projects(self.PROJECT_ID), self.create_ui, self.switch_project)
         list_widget_0     = TaskList(Status().stringify("BACKLOG").upper(), fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.BACKLOG))
         list_widget_1     = TaskList(Status().stringify("TODO").upper(),    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.TODO))
         list_widget_2     = TaskList(Status().stringify("IN_PROGRESS").upper(), fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.IN_PROGRESS))

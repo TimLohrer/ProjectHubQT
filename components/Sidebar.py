@@ -1,16 +1,20 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
+from database.handler import DatabaseHandler
 from config.Colors import Colors
 
 class Sidebar(QFrame):
-	def __init__(self, projects=[], switch_project=None):
+	def __init__(self, projects=[], update_ui=None, switch_project=None):
 		"""This is a standart ProjectHub visual sidebar element.
 
             Args:
                 projects (list<Projects>) (=[<empty list>])
         """
 		super().__init__() # init QWidget (parent class)
+
+		self.db_handler = DatabaseHandler("__database__/database.db")
+		self.update_ui = update_ui
 
         # configuring self ...
 		self.setObjectName("sidebar")
@@ -26,6 +30,7 @@ class Sidebar(QFrame):
 
         # configuring the elements
 		self.main_layout.setAlignment(Qt.AlignTop)
+		self.create_task_button.clicked.connect(self.createTask)
 		self.scroll_area.setWidgetResizable(True)
 		self.scroll_area.setFixedWidth(200)
 		self.scroll_area.setMinimumHeight(350)
@@ -43,3 +48,7 @@ class Sidebar(QFrame):
 		for project in projects:
 			self.projects_container_layout.addWidget(project)
 			project.clicked.connect(switch_project)
+
+	def createTask(self):
+		self.db_handler.tasks.create(1, 1, 1, "ABC", "DEV", "TASK", "IN_PROGRESS", "VERY_HIGH", "")
+		self.update_ui()

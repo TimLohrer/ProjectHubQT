@@ -1,5 +1,8 @@
 import sqlite3
 from config.structs import *
+from config.Status import Status
+from config.Type import Type
+from config.Priority import Priority
 
 class DatabaseHandler():
     def __init__(self, path_to_sqlite: str):
@@ -12,7 +15,7 @@ class DatabaseHandler():
         self.projects = Projects(self)
         self.tasks = Tasks(self)
 
-    def query(self, query_string: str) -> tuple:
+    def query(self, query_string: str, update: bool = False) -> tuple:
         """Commands a query to the sqlite3 database.
 
             args: query_string (str)
@@ -24,6 +27,13 @@ class DatabaseHandler():
 
         try:
             answer = cursor.execute(query_string)
+
+            if update:
+                connection.commit()
+                connection.close()
+                return (True, None)
+
+
             answer = answer.fetchall()
 
             # reformatting all possible sql injection attempts
@@ -99,6 +109,32 @@ class Tasks():
 
         # return answer if correct else empty list
         return [TaskStruct(task) for task in answer[1]] if answer[0] else []
+
+    def create(self, project_id: int, reporter_id: int, asignee_id: int, title: str, description: str = "", type: str = Type.TASK, status: str = Status.BACKLOG, priority: str = Priority.MEDIUM, due_date: str = ""):
+        # securing each element which has the slightest possibility of being messed with
+        secure_project_id = self.db_handler.secure(str(project_id))
+        secure_reporter_id = self.db_handler.secure(str(reporter_id))
+        secure_asignee_id = self.db_handler.secure(str(asignee_id))
+        secure_title = self.db_handler.secure(str(title))
+        secure_description = self.db_handler.secure(str(description))
+        secure_type = self.db_handler.secure(str(type))
+        secure_status = self.db_handler.secure(str(status))
+        secure_priority = self.db_handler.secure(str(priority))
+        secure_due_date = self.db_handler.secure(str(due_date))
+
+        create_date = ""
+
+        # query
+        answer = self.db_handler.query(f"""
+            INSERT INTO Task
+                (projectID, type, priority, title, description, reporterID, asigneeID, createDate, dueDate, status)
+                VALUES ({int(secure_project_id)}, '{secure_type}', '{secure_priority}', '{secure_title}', '{secure_description}', {int(secure_reporter_id)}, {int(secure_asignee_id)}, '{secure_due_date}', '{create_date}', '{secure_status}');
+            """, True)
+
+        print(answer)
+
+        # return answer if correct else empty list
+        # return [TaskStruct(task) for task in answer[1]] if answer[0] else []
 
 
 
