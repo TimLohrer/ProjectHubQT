@@ -4,7 +4,7 @@ import sys
 # all further libaries (even if not used in this file)
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 
 # porject inter import
 from __init__ import *
@@ -13,9 +13,9 @@ def fetch_projects(active_project_id) -> list:
     # convert each item from database into pyhton object
     return [Project(project, project.id == active_project_id) for project in db_handler.projects.fetch_all()]
 
-def fetch_tasks(user_id: int, project_id: int, status: str) -> list:
+def fetch_tasks(project_id: int, status: str) -> list:
     # convert each item from database into pyhton object
-    return [Task(task) for task in db_handler.tasks.fetch_condition(user_id, project_id, status)]
+    return [Task(task) for task in db_handler.tasks.fetch_condition(project_id, status)]
 
 class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""
@@ -45,10 +45,10 @@ class Window(QMainWindow):
         horizontal_layout = QHBoxLayout()
         title_bar         = TitleBar(self)
         sidebar           = Sidebar(fetch_projects(self.PROJECT_ID), self.create_ui, self.switch_project)
-        list_widget_0     = TaskList(Status().stringify("BACKLOG").upper(), fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.BACKLOG))
-        list_widget_1     = TaskList(Status().stringify("TODO").upper(),    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.TODO))
-        list_widget_2     = TaskList(Status().stringify("IN_PROGRESS").upper(), fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.IN_PROGRESS))
-        list_widget_3     = TaskList(Status().stringify("DONE").upper(),    fetch_tasks(self.USER_ID, self.PROJECT_ID, status=Status.DONE))
+        list_widget_0     = TaskList(Status().stringify("BACKLOG").upper(),     fetch_tasks(project_id=self.PROJECT_ID, status=Status.BACKLOG))
+        list_widget_1     = TaskList(Status().stringify("TODO").upper(),        fetch_tasks(project_id=self.PROJECT_ID, status=Status.TODO))
+        list_widget_2     = TaskList(Status().stringify("IN_PROGRESS").upper(), fetch_tasks(project_id=self.PROJECT_ID, status=Status.IN_PROGRESS))
+        list_widget_3     = TaskList(Status().stringify("DONE").upper(),        fetch_tasks(project_id=self.PROJECT_ID, status=Status.DONE))
 
         # configuring new elements
         vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -86,6 +86,7 @@ def main():
     # application and window built
     application = QApplication(sys.argv)
     application.setWindowIcon(QIcon('assets/icon.ico'))
+    application.setFont(QFont("Roboto"))
     main_window = Window()
 
     # display window

@@ -26,7 +26,7 @@ class TaskStruct():
         self.priority      = task[3] if task[3] is not None else ""
         self.title         = task[4] if task[4] is not None else ""
         self.description   = task[5] if task[5] is not None else ""
-        self.reporter_id   = task[6]
+        self.creator_id    = task[6]
         self.asignee_id    = task[7]
         self.creation_date = task[8]
         self.due_date      = task[9]

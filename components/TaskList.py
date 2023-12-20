@@ -38,4 +38,5 @@ class TaskList(QWidget):
 
         for task in tasks:
             self.container_layout.addWidget(task)
+            self.container_layout.addSpacing(5)
 

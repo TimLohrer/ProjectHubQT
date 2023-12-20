@@ -93,27 +93,25 @@ class Tasks():
     def __init__(self, db_handler):
         self.db_handler = db_handler
 
-    def fetch_condition(self, user_id: int, project_id: int, status: str):
+    def fetch_condition(self, project_id: int, status: str):
         # securing each element which has the slightest possibility of being messed with
-        secure_user_id = self.db_handler.secure(str(user_id))
         secure_project_id = self.db_handler.secure(str(project_id))
         secure_status = self.db_handler.secure(status)
 
         # query
         answer = self.db_handler.query(f"""
             SELECT * FROM Task WHERE
-                (reporterID = {secure_user_id} OR asigneeId = {secure_user_id})
-                AND projectID = {secure_project_id}
+                projectID = {secure_project_id}
                 AND status = '{secure_status}';
             """)
 
         # return answer if correct else empty list
         return [TaskStruct(task) for task in answer[1]] if answer[0] else []
 
-    def create(self, project_id: int, reporter_id: int, asignee_id: int, title: str, description: str = "", type: str = Type.TASK, status: str = Status.BACKLOG, priority: str = Priority.MEDIUM, due_date: str = ""):
+    def create(self, project_id: int, creator_id: int, asignee_id: int, title: str, description: str = "", type: str = Type.TASK, status: str = Status.BACKLOG, priority: str = Priority.MEDIUM, due_date: str = ""):
         # securing each element which has the slightest possibility of being messed with
         secure_project_id = self.db_handler.secure(str(project_id))
-        secure_reporter_id = self.db_handler.secure(str(reporter_id))
+        secure_creator_id = self.db_handler.secure(str(creator_id))
         secure_asignee_id = self.db_handler.secure(str(asignee_id))
         secure_title = self.db_handler.secure(str(title))
         secure_description = self.db_handler.secure(str(description))
@@ -127,14 +125,11 @@ class Tasks():
         # query
         answer = self.db_handler.query(f"""
             INSERT INTO Task
-                (projectID, type, priority, title, description, reporterID, asigneeID, createDate, dueDate, status)
-                VALUES ({int(secure_project_id)}, '{secure_type}', '{secure_priority}', '{secure_title}', '{secure_description}', {int(secure_reporter_id)}, {int(secure_asignee_id)}, '{secure_due_date}', '{create_date}', '{secure_status}');
+                (projectID, type, priority, title, description, creatorID, asigneeID, createDate, dueDate, status)
+                VALUES ({int(secure_project_id)}, '{secure_type}', '{secure_priority}', '{secure_title}', '{secure_description}', {int(secure_creator_id)}, {int(secure_asignee_id)}, '{secure_due_date}', '{create_date}', '{secure_status}');
             """, True)
 
-        print(answer)
-
-        # return answer if correct else empty list
-        # return [TaskStruct(task) for task in answer[1]] if answer[0] else []
+        return answer
 
 
 
