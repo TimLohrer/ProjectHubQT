@@ -32,31 +32,7 @@ class Task(QFrame):
         self.main_layout = QVBoxLayout()
         self.title_label = QLabel(self.task.title)
         self.description_label = QLabel(self.task.description)
-        self.type_icon = ""
-        match self.task.type:
-            case Type.TASK:
-                type_icon = "📋"
-            case Type.PROBLEM:
-                type_icon = "⚠️"
-            case Type.INITIATIVE:
-                type_icon = "💡"
-            case _:
-                type_icon = Type().stringify(self.task.type)
-        self.priority_icon = ""
-        match self.task.priority:
-            case Priority.VERY_LOW:
-                priority_icon = "🔵"
-            case Priority.LOW:
-                priority_icon = "🟣"
-            case Priority.MEDIUM:
-                priority_icon = "🟡"
-            case Priority.HIGH:
-                priority_icon = "🟠"
-            case Priority.VERY_HIGH:
-                priority_icon = "🔴"
-            case _:
-                priority_icon = Priority().stringify(self.task.priority)
-        self.info_label = QLabel(f"Type: <b>{ type_icon }</b>  |  Priority: <b>{ priority_icon }</b>  |  Asignee: <b>{ self.task.asignee_id }</b>")
+        self.info_label = QLabel(f"Type: <b>{ Type().emojify(self.task.type) }</b>  |  Priority: <b>{ Priority().emojify(self.task.priority) }</b>  |  Asignee: <b>{ self.task.asignee_id }</b>")
 
         # configuring the elements
         self.main_layout.setAlignment(Qt.AlignTop)

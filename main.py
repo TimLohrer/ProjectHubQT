@@ -45,10 +45,10 @@ class Window(QMainWindow):
         horizontal_layout = QHBoxLayout()
         title_bar         = TitleBar(self)
         sidebar           = Sidebar(fetch_projects(self.PROJECT_ID), self.create_ui, self.switch_project)
-        list_widget_0     = TaskList(Status().stringify("BACKLOG").upper(),     fetch_tasks(project_id=self.PROJECT_ID, status=Status.BACKLOG))
-        list_widget_1     = TaskList(Status().stringify("TODO").upper(),        fetch_tasks(project_id=self.PROJECT_ID, status=Status.TODO))
-        list_widget_2     = TaskList(Status().stringify("IN_PROGRESS").upper(), fetch_tasks(project_id=self.PROJECT_ID, status=Status.IN_PROGRESS))
-        list_widget_3     = TaskList(Status().stringify("DONE").upper(),        fetch_tasks(project_id=self.PROJECT_ID, status=Status.DONE))
+        list_widget_0     = TaskList(" " + Status().emojify(Status.BACKLOG)     + " " +Status().stringify("BACKLOG").upper(),     fetch_tasks(project_id=self.PROJECT_ID, status=Status.BACKLOG))
+        list_widget_1     = TaskList(" " + Status().emojify(Status.TODO)        + " " +Status().stringify("TODO").upper(),        fetch_tasks(project_id=self.PROJECT_ID, status=Status.TODO))
+        list_widget_2     = TaskList(" " + Status().emojify(Status.IN_PROGRESS) + " " +Status().stringify("IN_PROGRESS").upper(), fetch_tasks(project_id=self.PROJECT_ID, status=Status.IN_PROGRESS))
+        list_widget_3     = TaskList(" " + Status().emojify(Status.DONE)        + " " +Status().stringify("DONE").upper(),        fetch_tasks(project_id=self.PROJECT_ID, status=Status.DONE))
 
         # configuring new elements
         vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)

@@ -40,3 +40,18 @@ class Priority():
                 return self.VERY_HIGH_STRING
             case _:
                 return "UNKNOWN"
+
+    def emojify(self, status):
+        match status:
+            case self.VERY_LOW:
+                return "🔵"
+            case self.LOW:
+                return "🟣"
+            case self.MEDIUM:
+                return "🟡"
+            case self.HIGH:
+                return "🟠"
+            case self.VERY_HIGH:
+                return "🔴"
+            case _:
+                return "❓"

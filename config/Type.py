@@ -28,3 +28,14 @@ class Type():
                 return self.INITIATIVE_STRING
             case _:
                 return "UNKNOWN"
+
+    def emojify(self, type):
+        match type:
+            case self.TASK:
+                return "📋"
+            case self.PROBLEM:
+                return "⚠️"
+            case self.INITIATIVE:
+                return "💡"
+            case _:
+                return "❓"

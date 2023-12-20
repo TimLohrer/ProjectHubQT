@@ -34,3 +34,16 @@ class Status():
                 return self.DONE_STRING
             case _:
                 return "UNKNOWN"
+
+    def emojify(self, status):
+        match status:
+            case self.BACKLOG:
+                return "📚"
+            case self.TODO:
+                return "📝"
+            case self.IN_PROGRESS:
+                return "🕥"
+            case self.DONE:
+                return "✅"
+            case _:
+                return "❓"

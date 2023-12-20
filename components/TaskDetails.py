@@ -36,24 +36,24 @@ class TaskDetails(QWidget):
 
         self.type_label = QLabel("Type")
         self.type_selector = QComboBox(self)
-        self.type_selector.addItem('Task')
-        self.type_selector.addItem('Problem')
-        self.type_selector.addItem('Initiative')
+        self.type_selector.addItem(Type().emojify(Type.TASK)       + " Task")
+        self.type_selector.addItem(Type().emojify(Type.PROBLEM)    + " Problem")
+        self.type_selector.addItem(Type().emojify(Type.INITIATIVE) + " Initiative")
 
         self.status_label = QLabel("Status")
         self.status_selector = QComboBox(self)
-        self.status_selector.addItem('Backlog')
-        self.status_selector.addItem('ToDo')
-        self.status_selector.addItem('In Progress')
-        self.status_selector.addItem('Done')
+        self.status_selector.addItem(Status().emojify(Status.BACKLOG)     + " Backlog")
+        self.status_selector.addItem(Status().emojify(Status.TODO)        + " ToDo")
+        self.status_selector.addItem(Status().emojify(Status.IN_PROGRESS) + " In Progress")
+        self.status_selector.addItem(Status().emojify(Status.DONE)        + " Done")
 
         self.priority_label = QLabel("Priority")
         self.priority_selector = QComboBox(self)
-        self.priority_selector.addItem('Very High')
-        self.priority_selector.addItem('High')
-        self.priority_selector.addItem('Medium')
-        self.priority_selector.addItem('Low')
-        self.priority_selector.addItem('Very Low')
+        self.priority_selector.addItem(Priority().emojify(Priority.VERY_HIGH) + " Very High")
+        self.priority_selector.addItem(Priority().emojify(Priority.HIGH)      + " High")
+        self.priority_selector.addItem(Priority().emojify(Priority.MEDIUM)    + " Medium")
+        self.priority_selector.addItem(Priority().emojify(Priority.LOW)       + " Low")
+        self.priority_selector.addItem(Priority().emojify(Priority.VERY_LOW)  + " Very Low")
 
         self.asignee_label = QLabel("Asignee")
         self.asignee_text = QLineEdit(str(self.task.asignee_id))
@@ -71,11 +71,11 @@ class TaskDetails(QWidget):
         self.description_text.setLineWrapMode(QTextEdit.WidgetWidth)
         self.description_text.setPlaceholderText("Enter a description...")
         self.description_text.textChanged.connect(self.description_changed)
-        self.type_selector.setCurrentText(Type().stringify(task.type))
+        self.type_selector.setCurrentText(Type().emojify(task.type) + " " + Type().stringify(task.type))
         self.type_selector.currentIndexChanged.connect(self.update_type)
-        self.status_selector.setCurrentText(Status().stringify(task.status))
+        self.status_selector.setCurrentText(Status().emojify(task.status) + " " + Status().stringify(task.status))
         self.status_selector.currentIndexChanged.connect(self.update_status)
-        self.priority_selector.setCurrentText(Priority().stringify(task.priority))
+        self.priority_selector.setCurrentText(Priority().emojify(task.priority) + " " + Priority().stringify(task.priority))
         self.priority_selector.currentIndexChanged.connect(self.update_priority)
         self.asignee_text.textChanged.connect(self.update_asignee)
         self.asignee_text.setPlaceholderText("Enter a username...")
@@ -162,15 +162,15 @@ class TaskDetails(QWidget):
         self.check_save_button_visibility()
 
     def update_type(self):
-        self.task.type = Type().parse(self.type_selector.currentText())
+        self.task.type = Type().parse(self.type_selector.currentText().split(" ")[1])
         self.check_save_button_visibility()
 
     def update_status(self):
-        self.task.status = Status().parse(self.status_selector.currentText())
+        self.task.status = Status().parse(self.status_selector.currentText().split(" ")[1])
         self.check_save_button_visibility()
 
     def update_priority(self):
-        self.task.priority = Priority().parse(self.priority_selector.currentText())
+        self.task.priority = Priority().parse(self.priority_selector.currentText().split(" ")[1])
         self.check_save_button_visibility()
 
     def update_asignee(self, new_asignee):
