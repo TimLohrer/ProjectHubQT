@@ -3,15 +3,17 @@ import sys
 
 # all further libaries (even if not used in this file)
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QFont
+import time
+import threading
 
 # porject inter import
 from __init__ import *
 
 def fetch_projects(active_project_id) -> list:
-    # convert each item from database into pyhton object
-    return [Project(project, project.id == active_project_id) for project in db_handler.projects.fetch_all()]
+        # convert each item from database into pyhton object
+        return [Project(project, project.id == active_project_id) for project in db_handler.projects.fetch_all()]
 
 def fetch_tasks(project_id: int, status: str) -> list:
     # convert each item from database into pyhton object
@@ -21,6 +23,10 @@ class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""
     def __init__(self):
         super().__init__()
+
+        # create db handler
+        self.db_handler = DatabaseHandler("__database__/database.db")
+
         # !!! === TEMP === (subject of change)
         self.USER_ID = 1
         self.PROJECT_ID = 1
@@ -32,6 +38,7 @@ class Window(QMainWindow):
 
         self.resize(1800, 900)
 
+        # initial creation of the ui
         self.create_ui()
 
         # styling
@@ -77,9 +84,33 @@ class Window(QMainWindow):
         self.horizontal_layout = horizontal_layout
 
     def switch_project(self, new_project):
-        # !!! check if exists
         self.PROJECT_ID = new_project
         self.create_ui()
+
+class Updater():
+    def __init__(self, main_window):
+        self.main_window = main_window
+        self.last_update = int(time.time())
+
+    def start_loop(self):
+        # start the main update loop to sync data live with other clients
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.check_and_update)
+        self.timer.start(1000)
+
+    def check_and_update(self):
+        print("Checking")
+        current_update = db_handler.system.fetch_update()
+        if current_update[0] == False:
+            print("FAILED TO FETCH SYSTEM ACCOUNT!!!")
+            print("Trying again in 5s...")
+            time.sleep(4)
+            return
+        current_update = int(current_update[1][0][0].split("=")[1])
+        if current_update > self.last_update:
+            print("Recived update! Updating ui...")
+            self.main_window.create_ui()
+            self.last_update = current_update
 
 def main():
     """Mainloop of the pyqt5 based ProjectHub project-managing software"""
@@ -89,6 +120,10 @@ def main():
     application.setFont(QFont("Roboto"))
     main_window = Window()
 
+    # create updater
+    updater = Updater(main_window)
+    updater.start_loop()
+
     # display window
     main_window.show()
 
@@ -96,7 +131,7 @@ def main():
     sys.exit(application.exec_())
 
 if __name__ == '__main__':
-    # setup database connection and handling
+    # create db handler
     db_handler = DatabaseHandler("__database__/database.db")
 
     # start mainloop

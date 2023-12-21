@@ -1,4 +1,6 @@
 import sqlite3
+import time
+
 from config.structs import *
 from config.Status import Status
 from config.Type import Type
@@ -12,6 +14,7 @@ class DatabaseHandler():
         """
         self.path_to_sqlite = path_to_sqlite
 
+        self.system = System(self)
         self.projects = Projects(self)
         self.tasks = Tasks(self)
 
@@ -31,6 +34,7 @@ class DatabaseHandler():
             if update:
                 connection.commit()
                 connection.close()
+                self.system.set_update()
                 return (True, None)
 
 
@@ -78,6 +82,22 @@ class DatabaseHandler():
         # retuning safe string
         return unsecure_string
 
+
+class System():
+    def __init__(self, db_handler: object):
+        self.db_handler = db_handler
+
+    def fetch_update(self):
+        # query
+        answer = self.db_handler.query("SELECT username FROM User WHERE ID == 0;")
+        # return answer if correct else empty list
+        return answer
+
+    def set_update(self):
+        # query
+        answer = self.db_handler.query(f"UPDATE User SET username = 'update={int(time.time())}' WHERE ID == 0;", True)
+        # return answer if correct else empty list
+        return answer
 
 class Projects():
     def __init__(self, db_handler: object):

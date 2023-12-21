@@ -51,4 +51,3 @@ class Sidebar(QFrame):
 
 	def createTask(self):
 		self.db_handler.tasks.create(1, 1, 1, "ABC", "DEV", "TASK", "IN_PROGRESS", "VERY_HIGH", "")
-		self.update_ui()

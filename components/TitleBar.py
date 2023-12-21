@@ -50,7 +50,7 @@ class TitleBar(QWidget):
         self.setFixedHeight(45)
         self.setStyleSheet(f"background-color: { Colors.second_background }; padding: 0px; border: 4px solid { Colors.second_background }")
 
-        self.title.setStyleSheet("font-weight: w700; font-size: 12px;")
+        self.title.setStyleSheet("font-weight: 700; font-size: 12px;")
 
         self.min_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
         self.nor_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
