@@ -130,15 +130,15 @@ class Tasks():
 
     def create(self, project_id: int, creator_id: int, asignee_id: int, title: str, description: str = "", type: str = Type.TASK, status: str = Status.BACKLOG, priority: str = Priority.MEDIUM, due_date: str = ""):
         # securing each element which has the slightest possibility of being messed with
-        secure_project_id = self.db_handler.secure(str(project_id))
-        secure_creator_id = self.db_handler.secure(str(creator_id))
-        secure_asignee_id = self.db_handler.secure(str(asignee_id))
-        secure_title = self.db_handler.secure(str(title))
+        secure_project_id  = self.db_handler.secure(str(project_id))
+        secure_creator_id  = self.db_handler.secure(str(creator_id))
+        secure_asignee_id  = self.db_handler.secure(str(asignee_id))
+        secure_title       = self.db_handler.secure(str(title))
         secure_description = self.db_handler.secure(str(description))
-        secure_type = self.db_handler.secure(str(type))
-        secure_status = self.db_handler.secure(str(status))
-        secure_priority = self.db_handler.secure(str(priority))
-        secure_due_date = self.db_handler.secure(str(due_date))
+        secure_type        = self.db_handler.secure(str(type))
+        secure_status      = self.db_handler.secure(str(status))
+        secure_priority    = self.db_handler.secure(str(priority))
+        secure_due_date    = self.db_handler.secure(str(due_date))
 
         create_date = ""
 
