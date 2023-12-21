@@ -7,35 +7,38 @@ class Type():
     PROBLEM_STRING = "Problem"
     INITIATIVE_STRING = "Initiative"
 
-    def parse(self, type):
-        match type:
-            case self.TASK_STRING:
-                return self.TASK
-            case self.PROBLEM_STRING:
-                return self.PROBLEM
-            case self.INITIATIVE_STRING:
-                return self.INITIATIVE
+    @staticmethod
+    def parse(status_type):
+        match status_type:
+            case Type.TASK_STRING:
+                return Type.TASK
+            case Type.PROBLEM_STRING:
+                return Type.PROBLEM
+            case Type.INITIATIVE_STRING:
+                return Type.INITIATIVE
             case _:
                 return "UNKNOWN"
 
-    def stringify(self, type):
-        match type:
-            case self.TASK:
-                return self.TASK_STRING
-            case self.PROBLEM:
-                return self.PROBLEM_STRING
-            case self.INITIATIVE:
-                return self.INITIATIVE_STRING
+    @staticmethod
+    def stringify(status_type):
+        match status_type:
+            case Type.TASK:
+                return Type.TASK_STRING
+            case Type.PROBLEM:
+                return Type.PROBLEM_STRING
+            case Type.INITIATIVE:
+                return Type.INITIATIVE_STRING
             case _:
                 return "UNKNOWN"
 
-    def emojify(self, type):
-        match type:
-            case self.TASK:
+    @staticmethod
+    def emojify(status_type):
+        match status_type:
+            case Type.TASK:
                 return "📋"
-            case self.PROBLEM:
+            case Type.PROBLEM:
                 return "⚠️"
-            case self.INITIATIVE:
+            case Type.INITIATIVE:
                 return "💡"
             case _:
                 return "❓"

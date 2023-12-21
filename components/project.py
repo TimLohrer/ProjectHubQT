@@ -4,24 +4,21 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from config.Colors import Colors
 
 class Project(QFrame):
-	# Create custom event emitter
-	clicked = pyqtSignal(int)
-
-	def __init__(self, project, active = False):
+	def __init__(self, window: object, project: object, active: bool = False):
 		"""This is a standart ProjectHub visual project element.
 
 			Args:
 		"""
-		super().__init__() # init QWidget (parent class)
+		super().__init__() # init QFrame (parent class)
+		self.project = project
+		self.window = window
 
         # configuring self ...
 		self.setObjectName("project")
 		self.setFixedWidth(200)
-		self.project = project
 
         # creating elements
 		self.main_layout = QVBoxLayout(self)
-
 		self.title_label = QLabel(project.name)
 
         # configuring the elements
@@ -35,5 +32,7 @@ class Project(QFrame):
         # adding tasks
 		self.main_layout.addWidget(self.title_label)
 
-	def mousePressEvent(self, event):
-		self.clicked.emit(self.project.id)
+    # DON'T TOUCH: this needs to stay in camel as pyqt is trying to access QFrame.mouseReleaseEvent
+	def mouseReleaseEvent(self, event):
+		self.window.switch_project(self.project.id)
+

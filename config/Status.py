@@ -1,4 +1,6 @@
 class Status():
+    """Unnötig."""
+
     BACKLOG = "BACKLOG"
     TODO = "TODO"
     IN_PROGRESS = "IN_PROGRESS"
@@ -9,41 +11,44 @@ class Status():
     IN_PROGRESS_STRING = "In Progress"
     DONE_STRING = "Done"
 
-    def parse(self, status):
+    @staticmethod
+    def parse(status):
         match status:
-            case self.BACKLOG_STRING:
-                return self.BACKLOG
-            case self.TODO_STRING:
-                return self.TODO
-            case self.IN_PROGRESS_STRING:
-                return self.IN_PROGRESS
-            case self.DONE_STRING:
-                return self.DONE
+            case Status.BACKLOG_STRING:
+                return Status.BACKLOG
+            case Status.TODO_STRING:
+                return Status.TODO
+            case Status.IN_PROGRESS_STRING:
+                return Status.IN_PROGRESS
+            case Status.DONE_STRING:
+                return Status.DONE
             case _:
                 return "UNKNOWN"
 
-    def stringify(self, status):
+    @staticmethod
+    def stringify(status):
         match status:
-            case self.BACKLOG:
-                return self.BACKLOG_STRING
-            case self.TODO:
-                return self.TODO_STRING
-            case self.IN_PROGRESS:
-                return self.IN_PROGRESS_STRING
-            case self.DONE:
-                return self.DONE_STRING
+            case Status.BACKLOG:
+                return Status.BACKLOG_STRING
+            case Status.TODO:
+                return Status.TODO_STRING
+            case Status.IN_PROGRESS:
+                return Status.IN_PROGRESS_STRING
+            case Status.DONE:
+                return Status.DONE_STRING
             case _:
                 return "UNKNOWN"
 
-    def emojify(self, status):
+    @staticmethod
+    def emojify(status):
         match status:
-            case self.BACKLOG:
+            case Status.BACKLOG:
                 return "📚"
-            case self.TODO:
+            case Status.TODO:
                 return "📝"
-            case self.IN_PROGRESS:
+            case Status.IN_PROGRESS:
                 return "🕥"
-            case self.DONE:
+            case Status.DONE:
                 return "✅"
             case _:
                 return "❓"

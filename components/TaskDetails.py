@@ -25,7 +25,7 @@ class TaskDetails(QWidget):
         self.task = copy(task)
         self.show_save_button = False
 
-        # creating elementsself.title
+        # creating elements
         self.main_layout = QVBoxLayout()
         self.title_bar = TitleBar(self, f"Edit Task", False, False)
 
@@ -36,24 +36,24 @@ class TaskDetails(QWidget):
 
         self.type_label = QLabel("Type")
         self.type_selector = QComboBox(self)
-        self.type_selector.addItem(Type().emojify(Type.TASK)       + " Task")
-        self.type_selector.addItem(Type().emojify(Type.PROBLEM)    + " Problem")
-        self.type_selector.addItem(Type().emojify(Type.INITIATIVE) + " Initiative")
+        self.type_selector.addItem(Type.emojify(Type.TASK)       + " Task")
+        self.type_selector.addItem(Type.emojify(Type.PROBLEM)    + " Problem")
+        self.type_selector.addItem(Type.emojify(Type.INITIATIVE) + " Initiative")
 
         self.status_label = QLabel("Status")
         self.status_selector = QComboBox(self)
-        self.status_selector.addItem(Status().emojify(Status.BACKLOG)     + " Backlog")
-        self.status_selector.addItem(Status().emojify(Status.TODO)        + " ToDo")
-        self.status_selector.addItem(Status().emojify(Status.IN_PROGRESS) + " In Progress")
-        self.status_selector.addItem(Status().emojify(Status.DONE)        + " Done")
+        self.status_selector.addItem(Status.emojify(Status.BACKLOG)     + " Backlog")
+        self.status_selector.addItem(Status.emojify(Status.TODO)        + " ToDo")
+        self.status_selector.addItem(Status.emojify(Status.IN_PROGRESS) + " In Progress")
+        self.status_selector.addItem(Status.emojify(Status.DONE)        + " Done")
 
         self.priority_label = QLabel("Priority")
         self.priority_selector = QComboBox(self)
-        self.priority_selector.addItem(Priority().emojify(Priority.VERY_HIGH) + " Very High")
-        self.priority_selector.addItem(Priority().emojify(Priority.HIGH)      + " High")
-        self.priority_selector.addItem(Priority().emojify(Priority.MEDIUM)    + " Medium")
-        self.priority_selector.addItem(Priority().emojify(Priority.LOW)       + " Low")
-        self.priority_selector.addItem(Priority().emojify(Priority.VERY_LOW)  + " Very Low")
+        self.priority_selector.addItem(Priority.emojify(Priority.VERY_HIGH) + " Very High")
+        self.priority_selector.addItem(Priority.emojify(Priority.HIGH)      + " High")
+        self.priority_selector.addItem(Priority.emojify(Priority.MEDIUM)    + " Medium")
+        self.priority_selector.addItem(Priority.emojify(Priority.LOW)       + " Low")
+        self.priority_selector.addItem(Priority.emojify(Priority.VERY_LOW)  + " Very Low")
 
         self.due_date_label = QLabel("Due Date")
         self.due_date_text = QLineEdit(self.task.due_date)

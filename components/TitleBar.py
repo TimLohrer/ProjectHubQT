@@ -8,12 +8,13 @@ from PyQt5.QtGui import QIcon
 from config.Colors import Colors
 
 class TitleBar(QWidget):
-    def __init__(self, window, title = "ProjectHub", enable_minimize = True, enable_maximize = True, enable_close = True):
+    def __init__(self, window, title: str = "ProjectHub", enable_min = True, enable_nor = True, enable_close = True):
         super().__init__()
         self.window = window
 
         # configuring self ...
         self.setAutoFillBackground(True)
+        self.window.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.initial_pos = None
 
         # creating elements
@@ -39,12 +40,9 @@ class TitleBar(QWidget):
         # adding element
         self.setLayout(self.horizontal_layout)
         self.horizontal_layout.addWidget(self.title)
-        if enable_minimize:
-            self.horizontal_layout.addWidget(self.min_button)
-        if enable_maximize:
-            self.horizontal_layout.addWidget(self.nor_button)
-        if enable_close:
-            self.horizontal_layout.addWidget(self.close_button)
+        if enable_min: self.horizontal_layout.addWidget(self.min_button)
+        if enable_nor: self.horizontal_layout.addWidget(self.nor_button)
+        if enable_close: self.horizontal_layout.addWidget(self.close_button)
 
         # styling
         self.setFixedHeight(45)

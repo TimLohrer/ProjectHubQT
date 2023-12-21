@@ -6,6 +6,27 @@ from config.Status import Status
 from config.Type import Type
 from config.Priority import Priority
 
+def secure(func):
+    """Prevent sql injection and cross-site-scripting.
+        Takes in a possible unsecure string and reformats it to be safley fed into the query.
+
+        args: func (function object)
+
+        This is intended to be a decorator.
+    """
+    def wrapper(*args, **kwargs):
+        """Modifies and parses sql safe arguemts to a given function."""
+        # replaces critical chars with its safe counterparts
+        secure_arg = lambda unsecure: unsecure.replace("'", "%27").replace('"', "%22").replace("`", "%60").replace("<", "%8B").replace(">", "%9B").replace("/", "%F7") # <--- i'm not super proud of that
+
+        # securing
+        secure_args = [secure_arg(arg) if isinstance(arg, str) else arg for arg in args]
+        secure_kwargs = {key: secure_arg(arg) if isinstance(arg, str) else arg for arg in kwargs.items()}
+
+        # call the function
+        return func(*secure_args, **secure_kwargs)
+    return wrapper
+
 class DatabaseHandler():
     def __init__(self, path_to_sqlite: str):
         """Establishes the connection to the given sqlite3 database.
@@ -14,11 +35,10 @@ class DatabaseHandler():
         """
         self.path_to_sqlite = path_to_sqlite
 
-        self.system = System(self)
         self.projects = Projects(self)
         self.tasks = Tasks(self)
 
-    def query(self, query_string: str, update: bool = False) -> tuple:
+    def query(self, query_string: str) -> tuple:
         """Commands a query to the sqlite3 database.
 
             args: query_string (str)
@@ -30,14 +50,6 @@ class DatabaseHandler():
 
         try:
             answer = cursor.execute(query_string)
-
-            if update:
-                connection.commit()
-                connection.close()
-                self.system.set_update()
-                return (True, None)
-
-
             answer = answer.fetchall()
 
             # reformatting all possible sql injection attempts
@@ -61,93 +73,77 @@ class DatabaseHandler():
             connection.close()  # safley terminate the connection
             return (False, exception)
 
-    def secure(self, unsecure_string: str) -> str:
-        """Prevent sql injection and cross-site-scripting.
-            Takes in a possible unsecure string and reformats it to be safley fed into the query.
-
-            args: unsecure_string (str)
-
-            returns: secure_string (str)
-        """
-        # SQL injection prevention
-        unsecure_string.replace("'", '%27')
-        unsecure_string.replace('"', '%22')
-        unsecure_string.replace('`', '%60')
-
-        # XSS prevention
-        unsecure_string.replace("<", '%8B')
-        unsecure_string.replace(">", '%9B')
-        unsecure_string.replace("/", '%F7')
-
-        # retuning safe string
-        return unsecure_string
-
-
-class System():
-    def __init__(self, db_handler: object):
-        self.db_handler = db_handler
-
-    def fetch_update(self):
-        # query
-        answer = self.db_handler.query("SELECT username FROM User WHERE ID == 0;")
-        # return answer if correct else empty list
-        return answer
-
-    def set_update(self):
-        # query
-        answer = self.db_handler.query(f"UPDATE User SET username = 'update={int(time.time())}' WHERE ID == 0;", True)
-        # return answer if correct else empty list
-        return answer
 
 class Projects():
     def __init__(self, db_handler: object):
         self.db_handler = db_handler
 
+    @secure
     def fetch_all(self):
-        # query
-        answer = self.db_handler.query("SELECT * FROM Project;")
+        query = """SELECT * FROM Project;"""
+
+        answer = self.db_handler.query(query)
         # return answer if correct else empty list
         return [ProjectStruct(project) for project in answer[1]] if answer[0] else []
 
 class Tasks():
-    def __init__(self, db_handler):
+    def __init__(self, db_handler: object):
         self.db_handler = db_handler
 
-    def fetch_condition(self, project_id: int, status: str):
-        # securing each element which has the slightest possibility of being messed with
-        secure_project_id = self.db_handler.secure(str(project_id))
-        secure_status = self.db_handler.secure(status)
-
-        # query
-        answer = self.db_handler.query(f"""
+    @secure
+    def fetch_by(self, project_id: int, status: str):
+        query = f"""
             SELECT * FROM Task WHERE
-                projectID = {secure_project_id}
-                AND status = '{secure_status}';
-            """)
+                projectID = {project_id}
+                AND status = '{status}';
+            """
 
+        answer = self.db_handler.query(query)
         # return answer if correct else empty list
         return [TaskStruct(task) for task in answer[1]] if answer[0] else []
 
-    def create(self, project_id: int, creator_id: int, asignee_id: int, title: str, description: str = "", type: str = Type.TASK, status: str = Status.BACKLOG, priority: str = Priority.MEDIUM, due_date: str = ""):
-        # securing each element which has the slightest possibility of being messed with
-        secure_project_id  = self.db_handler.secure(str(project_id))
-        secure_creator_id  = self.db_handler.secure(str(creator_id))
-        secure_asignee_id  = self.db_handler.secure(str(asignee_id))
-        secure_title       = self.db_handler.secure(str(title))
-        secure_description = self.db_handler.secure(str(description))
-        secure_type        = self.db_handler.secure(str(type))
-        secure_status      = self.db_handler.secure(str(status))
-        secure_priority    = self.db_handler.secure(str(priority))
-        secure_due_date    = self.db_handler.secure(str(due_date))
-
-        create_date = ""
+    @secure
+    def create(self,
+            project_id: int,
+            creator_id: int,
+            asignee_id: int,
+            title: str,
+            description: str = "",
+            task_type: str = Type.TASK,
+            status: str = Status.BACKLOG,
+            priority: str = Priority.MEDIUM,
+            due_date: int = None
+        ):
+        create_date = time.time()
+        query = f"""
+            INSERT INTO Task (
+                    projectID,
+                    type,
+                    priority,
+                    title,
+                    description,
+                    creatorID,
+                    asigneeID,
+                    createDate,
+                    dueDate,
+                    status
+                ) VALUES (
+                    {int(project_id)},
+                    '{task_type}',
+                    '{priority}',
+                    '{title}',
+                    '{description}',
+                    {int(creator_id)},
+                    {int(asignee_id)},
+                    {int(due_date)},
+                    {int(create_date)},
+                    '{status}');
+        """
 
         # query
-        answer = self.db_handler.query(f"""
-            INSERT INTO Task
-                (projectID, type, priority, title, description, creatorID, asigneeID, createDate, dueDate, status)
-                VALUES ({int(secure_project_id)}, '{secure_type}', '{secure_priority}', '{secure_title}', '{secure_description}', {int(secure_creator_id)}, {int(secure_asignee_id)}, '{secure_due_date}', '{create_date}', '{secure_status}');
-            """, True)
+        answer = self.db_handler.query(query)
+
+        print(query)
 
         return answer
 
@@ -155,9 +151,9 @@ class Tasks():
 
 # === TESTING PRUPOSES ONLY ===
 def main():
-    database = DatabaseHandler(input("Enter path to database: "))
-
     try:
+        database = DatabaseHandler(input("Enter path to database: "))
+
         while True:
             answer = database.query(input(">>> "))
 

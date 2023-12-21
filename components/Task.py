@@ -14,7 +14,7 @@ class Task(QFrame):
 
 			Args:
 		"""
-        super().__init__() # init QWidget (parent class)
+        super().__init__() # init QFrame (parent class)
 
         # configuring self ...
         self.setObjectName("task")
@@ -53,5 +53,4 @@ class Task(QFrame):
 
     def mousePressEvent(self, event):
         details = TaskDetails(self.original_task)
-        details.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         details.show()

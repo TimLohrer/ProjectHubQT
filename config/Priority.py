@@ -11,47 +11,50 @@ class Priority():
     HIGH_STRING = "High"
     VERY_HIGH_STRING = "Very High"
 
-    def parse(self, status):
+    @staticmethod
+    def parse(status):
         match status:
-            case self.VERY_LOW_STRING:
-                return self.VERY_LOW
-            case self.LOW_STRING:
-                return self.LOW
-            case self.MEDIUM_STRING:
-                return self.MEDIUM
-            case self.HIGH_STRING:
-                return self.HIGH
-            case self.VERY_HIGH_STRING:
-                return self.VERY_HIGH
+            case Priority.VERY_LOW_STRING:
+                return Priority.VERY_LOW
+            case Priority.LOW_STRING:
+                return Priority.LOW
+            case Priority.MEDIUM_STRING:
+                return Priority.MEDIUM
+            case Priority.HIGH_STRING:
+                return Priority.HIGH
+            case Priority.VERY_HIGH_STRING:
+                return Priority.VERY_HIGH
             case _:
                 return "UNKNOWN"
 
-    def stringify(self, status):
+    @staticmethod
+    def stringify(status):
         match status:
-            case self.VERY_LOW:
-                return self.VERY_LOW_STRING
-            case self.LOW:
-                return self.LOW_STRING
-            case self.MEDIUM:
-                return self.MEDIUM_STRING
-            case self.HIGH:
-                return self.HIGH_STRING
-            case self.VERY_HIGH:
-                return self.VERY_HIGH_STRING
+            case Priority.VERY_LOW:
+                return Priority.VERY_LOW_STRING
+            case Priority.LOW:
+                return Priority.LOW_STRING
+            case Priority.MEDIUM:
+                return Priority.MEDIUM_STRING
+            case Priority.HIGH:
+                return Priority.HIGH_STRING
+            case Priority.VERY_HIGH:
+                return Priority.VERY_HIGH_STRING
             case _:
                 return "UNKNOWN"
 
-    def emojify(self, status):
+    @staticmethod
+    def emojify(status):
         match status:
-            case self.VERY_LOW:
+            case Priority.VERY_LOW:
                 return "🔵"
-            case self.LOW:
+            case Priority.LOW:
                 return "🟣"
-            case self.MEDIUM:
+            case Priority.MEDIUM:
                 return "🟡"
-            case self.HIGH:
+            case Priority.HIGH:
                 return "🟠"
-            case self.VERY_HIGH:
+            case Priority.VERY_HIGH:
                 return "🔴"
             case _:
                 return "❓"
