@@ -5,7 +5,7 @@ from database.handler import DatabaseHandler
 from config.Colors import Colors
 
 class Sidebar(QFrame):
-	def __init__(self, projects):
+	def __init__(self, window: object, projects: list):
 		"""This is a standart ProjectHub visual sidebar element.
 
             Args:
@@ -13,6 +13,7 @@ class Sidebar(QFrame):
         """
 		super().__init__() # init QFrame (parent class)
 		self.db_handler = DatabaseHandler("__database__/database.db")
+		self.window = window
 
         # configuring self ...
 		self.setObjectName("sidebar")
@@ -47,4 +48,15 @@ class Sidebar(QFrame):
 			self.projects_container_layout.addWidget(project)
 
 	def createTask(self):
-		self.db_handler.tasks.create(1, 1, 1, "ABC", "DEV", "TASK", "BACKLOG", "VERY_HIGH", 0)
+		self.db_handler.tasks.create(
+			project_id=1,
+			creator_id=1,
+			asignee_id=1,
+			title="ABC",
+			description="DEV",
+			type="TASK",
+			status="BACKLOG",
+			priority="VERY_HIGH",
+			due_date=0
+		)
+		self.window.update_workpace()

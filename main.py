@@ -1,22 +1,22 @@
 # native libaries
 import sys
+import time
 
 # all further libaries (even if not used in this file)
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QFont
-import time
 
 # porject inter import
 from __init__ import *
 
 def fetch_projects(window: object) -> list:
     # convert each item from database into pyhton object
-    return [Project(window, project, project.id == window.PROJECT_ID) for project in db_handler.projects.fetch_all()]
+    return [Project(window, project, project.id == window.PROJECT_ID) for project in db_handler.projects.fetch()]
 
 def fetch_tasks(window: object, status: str) -> list:
     # convert each item from database into pyhton object
-    return [Task(task) for task in db_handler.tasks.fetch_by(window.PROJECT_ID, status)]
+    return [Task(task) for task in db_handler.tasks.fetch(project_id=window.PROJECT_ID, status=status)]
 
 class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""
@@ -40,9 +40,6 @@ class Window(QMainWindow):
         self.horizontal_layout = QHBoxLayout()
         self.title_bar         = TitleBar(self)
 
-        # build workspace
-        self.create_workspace()
-
         # configuring new elements
         self.setCentralWidget(self.window_widget)
         self.vertical_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -55,6 +52,27 @@ class Window(QMainWindow):
         self.vertical_layout.addWidget(self.title_bar)
         self.vertical_layout.addWidget(self.central_widget)
 
+        # creating and adding elements of the actual workspace
+        self.create_workspace()
+
+        # styling
+        self.setStyleSheet(f"margin: 0px; padding: 0px; border: 0px; outline: 0px; background-color: { Colors.background }; color: white;")
+
+        # timer
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_workpace)
+        self.timer.start(1000)
+
+    def create_workspace(self):
+        # workspace: sidebar
+        self.sidebar = Sidebar(self, fetch_projects(self))
+
+        # workspace: lists
+        self.list_widget_0 = TaskList(f"{ Status.emojify(Status.BACKLOG) } { Status.stringify(Status.BACKLOG) }", fetch_tasks(self, Status.BACKLOG))
+        self.list_widget_1 = TaskList(f"{ Status.emojify(Status.TODO) } { Status.stringify(Status.TODO) }",       fetch_tasks(self, Status.TODO))
+        self.list_widget_2 = TaskList(f"{ Status.emojify(Status.IN_PROGRESS) } { Status.stringify(Status.IN_PROGRESS) }", fetch_tasks(self, Status.IN_PROGRESS))
+        self.list_widget_3 = TaskList(f"{ Status.emojify(Status.DONE) } { Status.stringify(Status.DONE) }",       fetch_tasks(self, Status.DONE))
+
         # adding: sidebar
         self.horizontal_layout.addWidget(self.sidebar)
 
@@ -64,22 +82,22 @@ class Window(QMainWindow):
         self.horizontal_layout.addWidget(self.list_widget_2)
         self.horizontal_layout.addWidget(self.list_widget_3)
 
-        # styling
-        self.setStyleSheet(f"margin: 0px; padding: 0px; border: 0px; outline: 0px; background-color: { Colors.background }; color: white;")
+    def update_workpace(self):
+        # removing widgets workspace: sidebar
+        self.horizontal_layout.removeWidget(self.sidebar)
 
-    def create_workspace(self):
-        # creating / redefining elements
-        self.sidebar = Sidebar(fetch_projects(self))
+        # removing widgets workspace: lists
+        self.horizontal_layout.removeWidget(self.list_widget_0)
+        self.horizontal_layout.removeWidget(self.list_widget_1)
+        self.horizontal_layout.removeWidget(self.list_widget_2)
+        self.horizontal_layout.removeWidget(self.list_widget_3)
 
-        self.list_widget_0 = TaskList(f"{Status.emojify(Status.BACKLOG)} {Status.stringify(Status.BACKLOG)}", fetch_tasks(self, Status.BACKLOG))
-        self.list_widget_1 = TaskList(f"{Status.emojify(Status.TODO)} {Status.stringify(Status.TODO)}",       fetch_tasks(self, Status.TODO))
-        self.list_widget_2 = TaskList(f"{Status.emojify(Status.IN_PROGRESS)} {Status.stringify(Status.IN_PROGRESS)}", fetch_tasks(self, Status.IN_PROGRESS))
-        self.list_widget_3 = TaskList(f"{Status.emojify(Status.DONE)} {Status.stringify(Status.DONE)}",       fetch_tasks(self, Status.DONE))
-
+        # creating and adding elements of new workspace
+        self.create_workspace()
 
     def switch_project(self, new_project):
         self.PROJECT_ID = new_project
-        self.create_workspace()
+        self.update_workpace()
 
 
 
@@ -90,11 +108,6 @@ def main():
     application.setWindowIcon(QIcon('assets/icon.ico'))
     application.setFont(QFont("Roboto"))
     main_window = Window()
-
-    # create timer
-    timer = QTimer()
-    timer.timeout.connect(main_window.create_workspace)
-    timer.start(1000)
 
     # display window
     main_window.show()

@@ -1,31 +1,39 @@
 import sqlite3
 import time
 
-from config.structs import *
-from config.Status import Status
-from config.Type import Type
-from config.Priority import Priority
+if not __name__ == "__main__":
+    from config.structs import *
+    from config.Status import Status
+    from config.Type import Type
+    from config.Priority import Priority
 
-def secure(func):
-    """Prevent sql injection and cross-site-scripting.
-        Takes in a possible unsecure string and reformats it to be safley fed into the query.
 
-        args: func (function object)
+def secure(arguments: dict):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            secure_kwargs = {argument: kwargs[argument] if not isinstance(kwargs[argument], str) else safe_string(kwargs[argument])
+                for argument in arguments.keys() if argument in kwargs and isinstance(kwargs[argument], arguments[argument]["type"])}
 
-        This is intended to be a decorator.
-    """
-    def wrapper(*args, **kwargs):
-        """Modifies and parses sql safe arguemts to a given function."""
-        # replaces critical chars with its safe counterparts
-        secure_arg = lambda unsecure: unsecure.replace("'", "%27").replace('"', "%22").replace("`", "%60").replace("<", "%8B").replace(">", "%9B").replace("/", "%F7") # <--- i'm not super proud of that
+            return func(*args, **secure_kwargs)
+        return wrapper
+    return decorator
 
-        # securing
-        secure_args = [secure_arg(arg) if isinstance(arg, str) else arg for arg in args]
-        secure_kwargs = {key: secure_arg(arg) if isinstance(arg, str) else arg for arg in kwargs.items()}
+def safe_string(string: str):
+    # SQL injection prevention
+    string.replace("'", '%27')
+    string.replace('"', '%22')
+    string.replace('`', '%60')
 
-        # call the function
-        return func(*secure_args, **secure_kwargs)
-    return wrapper
+    # XSS prevention
+    string.replace("<", '%8B')
+    string.replace(">", '%9B')
+    string.replace("/", '%F7')
+
+    safe_string = f"'{ string }'"
+
+    return safe_string
+
+
 
 class DatabaseHandler():
     def __init__(self, path_to_sqlite: str):
@@ -35,9 +43,11 @@ class DatabaseHandler():
         """
         self.path_to_sqlite = path_to_sqlite
 
-        self.projects = Projects(self)
         self.tasks = Tasks(self)
+        self.projects = Projects(self)
+        self.users = Users(self)
 
+    # general
     def query(self, query_string: str) -> tuple:
         """Commands a query to the sqlite3 database.
 
@@ -51,6 +61,7 @@ class DatabaseHandler():
         try:
             answer = cursor.execute(query_string)
             answer = answer.fetchall()
+            connection.commit()
 
             # reformatting all possible sql injection attempts
             for row in answer:
@@ -73,95 +84,219 @@ class DatabaseHandler():
             connection.close()  # safley terminate the connection
             return (False, exception)
 
+    # specialized
+    def select(self, table: object, object: object = None, **kwargs) -> list:
+        # inquiry
+        condition = self.__convert_defintion_based(table, **kwargs)
+        answer = self.query(f"SELECT * FROM { table.name }" + (";" if len(kwargs) == 0 else f" WHERE { " AND ".join(condition) };"))
 
-class Projects():
-    def __init__(self, db_handler: object):
-        self.db_handler = db_handler
+        # answer formatting (either direct answer or object formatted answer)
+        return answer[1] if object is None else [object(*row) for row in answer[1]]
 
-    @secure
-    def fetch_all(self):
-        query = """SELECT * FROM Project;"""
+    def insert(self, table: object, **kwargs):
+        # inquiry
+        variables = self.__convert_order_based(table, **kwargs)
+        answer = self.query(f"INSERT INTO { table.name } ({ ", ".join(variables["names"]) }) VALUES ({ ", ".join(variables["values"]) });")
 
-        answer = self.db_handler.query(query)
-        # return answer if correct else empty list
-        return [ProjectStruct(project) for project in answer[1]] if answer[0] else []
+    def update(self, table: object, id: int, **kwargs):
+        # inquiry
+        variables = self.__convert_defintion_based(table, **kwargs)
+        answer = self.query(f"UPDATE { table.name } SET { ",".join(variables) } WHERE ID = { id };")
+
+    def delete(self, table: object, id: int):
+        # inquiry
+        answer = self.query(f"DELETE FROM { table.name } WHERE ID = { id };")
+
+    # __private
+    def __convert_defintion_based(self, table: object, **kwargs) -> list:
+        return [f"{ table.arguments[argument]["col_name"] } = { str(kwargs[argument]) }" for argument in table.arguments.keys() if argument in kwargs and kwargs[argument] is not None]
+
+    def __convert_order_based(self, table: object, **kwargs) -> tuple:
+        return {
+            "names": [table.arguments[argument]["col_name"] for argument in table.arguments.keys() if argument in kwargs and kwargs[argument] is not None],
+            "values": [str(kwargs[argument]) for argument in table.arguments.keys() if argument in kwargs and kwargs[argument] is not None]
+        }
+
 
 class Tasks():
+    arguments = {
+        "id": {
+            "type": int,
+            "col_name": "ID"
+        },
+        "project_id": {
+            "type": int,
+            "col_name": "projectID"
+        },
+        "creator_id": {
+            "type": int,
+            "col_name": "creatorID"
+        },
+        "asignee_id": {
+            "type": int,
+            "col_name": "asigneeID"
+        },
+        "title": {
+            "type": str,
+            "col_name": "title"
+        },
+        "description": {
+            "type": str,
+            "col_name": "description"
+        },
+        "type": {
+            "type": str,
+            "col_name": "type"
+        },
+        "status": {
+            "type": str,
+            "col_name": "status"
+        },
+        "priority": {
+            "type": str,
+            "col_name": "priority"
+        },
+        "due_date": {
+            "type": int,
+            "col_name": "dueDate"
+        },
+        "create_date": {
+            "type": int,
+            "col_name": "createDate"
+        }
+    }
+
     def __init__(self, db_handler: object):
         self.db_handler = db_handler
 
-    @secure
-    def fetch_by(self, project_id: int, status: str):
-        query = f"""
-            SELECT * FROM Task WHERE
-                projectID = {project_id}
-                AND status = '{status}';
-            """
+        # constants
+        self.name = "Task"
 
-        answer = self.db_handler.query(query)
-        # return answer if correct else empty list
-        return [TaskStruct(task) for task in answer[1]] if answer[0] else []
+    @secure(arguments)
+    def fetch(self, project_id: int, status: str, object: object = None if __name__ == "__main__" else TaskStruct):
+        return self.db_handler.select(self, object, project_id=project_id, status=status)
 
-    @secure
-    def create(self,
-            project_id: int,
-            creator_id: int,
-            asignee_id: int,
-            title: str,
-            description: str = "",
-            task_type: str = Type.TASK,
-            status: str = Status.BACKLOG,
-            priority: str = Priority.MEDIUM,
-            due_date: int = None
-        ):
-        create_date = time.time()
-        query = f"""
-            INSERT INTO Task (
-                    projectID,
-                    type,
-                    priority,
-                    title,
-                    description,
-                    creatorID,
-                    asigneeID,
-                    createDate,
-                    dueDate,
-                    status
-                ) VALUES (
-                    {int(project_id)},
-                    '{task_type}',
-                    '{priority}',
-                    '{title}',
-                    '{description}',
-                    {int(creator_id)},
-                    {int(asignee_id)},
-                    {int(due_date)},
-                    {int(create_date)},
-                    '{status}');
-        """
+    @secure(arguments)
+    def create(self, **kwargs):
+        self.db_handler.insert(self, create_date=int(time.time()), **kwargs)
 
-        # query
-        answer = self.db_handler.query(query)
+    @secure(arguments)
+    def update(self, id: int, **kwargs):
+        self.db_handler.update(self, id, **kwargs)
 
-        print(query)
+    @secure(arguments)
+    def delete(self, id: int):
+        self.db_handler.delete(self, id)
 
-        return answer
+class Projects():
+    arguments = {
+        "id": {
+            "type": int,
+            "col_name": "ID"
+        },
+        "name": {
+            "type": str,
+            "col_name": "name"
+        },
+        "description": {
+            "type": str,
+            "col_name": "description"
+        }
+    }
+
+    def __init__(self, db_handler: object):
+        self.db_handler = db_handler
+
+        # constants
+        self.name = "Project"
+
+    @secure(arguments)
+    def fetch(self, object: object = None if __name__ == "__main__" else ProjectStruct):
+        return self.db_handler.select(self, object)
+
+    @secure(arguments)
+    def create(self, **kwargs):
+        self.db_handler.insert(self, **kwargs)
+
+    @secure(arguments)
+    def update(self, id: int, **kwargs):
+        self.db_handler.update(self, id, **kwargs)
+
+    @secure(arguments)
+    def delete(self, id: int):
+        self.db_handler.delete(self, id)
+
+class Users():
+    arguments = {
+        "id": {
+            "type": int,
+            "col_name": "ID"
+        },
+        "firstname": {
+            "type": str,
+            "col_name": "firstname"
+        },
+        "surname": {
+            "type": str,
+            "col_name": "surname"
+        },
+        "username": {
+            "type": str,
+            "col_name": "username"
+        },
+        "email": {
+            "type": str,
+            "col_name": "email"
+        }
+    }
+
+    def __init__(self, db_handler: object):
+        self.db_handler = db_handler
+
+        # contants
+        self.name = "User"
+
+    @secure(arguments)
+    def fetch(self, object: object = None if __name__ == "__main__" else UserStruct):
+        return self.db_handler.select(self, object)
+
+    @secure(arguments)
+    def create(self, **kwargs):
+        self.db_handler.insert(self, **kwargs)
+
+    @secure(arguments)
+    def update(self, id: int, **kwargs):
+        self.db_handler.update(self, id, **kwargs)
+
+    @secure(arguments)
+    def delete(self, id: int):
+        self.db_handler.delete(self, id)
+
 
 
 
 # === TESTING PRUPOSES ONLY ===
 def main():
+    ACCESS_MODE = False
+
     try:
         database = DatabaseHandler(input("Enter path to database: "))
 
-        while True:
-            answer = database.query(input(">>> "))
+        if ACCESS_MODE:
+            while True:
+                answer = database.query(input(">>> "))
 
-            if answer[0]:
-                for row in answer[1]:
-                    print(row)
-            else:
-                print(answer[1])
+                if answer[0]:
+                    for row in answer[1]:
+                        print(row)
+                else:
+                    print(answer[1])
+        else:
+            # code here ...
+            pass
+            print(database.tasks.fetch(project_id=3, status="BACKLOG"))
+            print(database.projects.fetch())
+            # print(database.users.fetch())
 
     except KeyboardInterrupt:
         pass
