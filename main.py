@@ -16,7 +16,7 @@ def fetch_projects(window: object) -> list:
 
 def fetch_tasks(window: object, status: str) -> list:
     # convert each item from database into pyhton object
-    return [Task(task) for task in db_handler.tasks.fetch(project_id=window.PROJECT_ID, status=status)]
+    return [Task(task, window) for task in db_handler.tasks.fetch(project_id=window.PROJECT_ID, status=status)]
 
 class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""

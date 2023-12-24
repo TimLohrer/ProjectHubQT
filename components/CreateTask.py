@@ -7,10 +7,11 @@ from components.TitleBar import TitleBar
 from config.Type import Type
 from config.Status import Status
 from config.Priority import Priority
+from config.structs import Task, User
 from database.handler import DatabaseHandler
 
-class TaskDetails(QWidget):
-    def __init__(self, task, asignee, window):
+class CreateTask(QWidget):
+    def __init__(self):
         """This is a standart ProjectHub visual task element.
 
 			Args:
@@ -21,12 +22,8 @@ class TaskDetails(QWidget):
 
         # configuring self ...
         self.setFixedSize(800, 800)
-        self.window = window
-        self.original_task = copy(task)
-        self.task = copy(task)
+        self.task = Task()
         self.show_save_button = False
-        self.creator = self.db_handler.users.fetch(id=self.task.creator_id)[0]
-        self.asignee = asignee
 
         # creating elements
         self.main_layout = QVBoxLayout()
@@ -62,10 +59,10 @@ class TaskDetails(QWidget):
         self.due_date_text = QLineEdit(self.task.due_date)
 
         self.asignee_label = QLabel("Asignee")
-        self.asignee_text = QLineEdit(str(self.asignee.username))
+        self.asignee_text = QLineEdit(str(self.task.asignee_id))
 
         self.creator_label = QLabel("Creator")
-        self.creator_text = QLabel(str(self.creator.username))
+        self.creator_text = QLabel(str(self.task.creator_id))
 
         self.delete_button = QPushButton("Delete")
         self.save_button = QPushButton("Save")
@@ -107,11 +104,9 @@ class TaskDetails(QWidget):
 
         self.delete_button.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
         self.delete_button.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
-        self.delete_button.clicked.connect(self.delete)
 
         self.save_button.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
         self.save_button.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
-        self.save_button.clicked.connect(self.save)
 
         # styling
         self.setStyleSheet(f"background-color: { Colors.background }; color: white;")
@@ -224,15 +219,15 @@ class TaskDetails(QWidget):
         self.check_save_button_visibility()
 
     def update_type(self):
-        self.task.type = Type.parse(" ".join(self.type_selector.currentText().split(" ")[1:]))
+        self.task.type = Type().parse(self.type_selector.currentText().split(" ")[1])
         self.check_save_button_visibility()
 
     def update_status(self):
-        self.task.status = Status.parse(" ".join(self.status_selector.currentText().split(" ")[1:]))
+        self.task.status = Status().parse(self.status_selector.currentText().split(" ")[1])
         self.check_save_button_visibility()
 
     def update_priority(self):
-        self.task.priority = Priority.parse(" ".join(self.priority_selector.currentText().split(" ")[1:]))
+        self.task.priority = Priority().parse(self.priority_selector.currentText().split(" ")[1])
         self.check_save_button_visibility()
 
     def update_due_date(self, new_due_date):
@@ -253,25 +248,3 @@ class TaskDetails(QWidget):
             self.save_button.show()
         else:
             self.save_button.hide()
-
-    # def validate_inputs(self):
-
-
-    def save(self):
-        self.db_handler.tasks.update(
-            id=self.task.id,
-			asignee_id=self.task.asignee_id,
-			title=self.task.title,
-			description=self.task.description,
-			type=self.task.type,
-			status=self.task.status,
-			priority=self.task.priority,
-			due_date=self.task.due_date
-		)
-        self.window.update_workpace()
-        self.hide()
-
-    def delete(self):
-        self.db_handler.tasks.delete(id=self.task.id)
-        self.window.update_workpace()
-        self.hide()
