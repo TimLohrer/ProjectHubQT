@@ -272,8 +272,8 @@ class Users():
         self.name = "User"
 
     @secure(arguments)
-    def fetch(self, object: object = None if __name__ == "__main__" else UserStruct):
-        return self.db_handler.select(self, object)
+    def fetch(self, id: int, object: object = None if __name__ == "__main__" else UserStruct):
+        return self.db_handler.select(self, object, id=id)
 
     @secure(arguments)
     def create(self, **kwargs):
