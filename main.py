@@ -22,10 +22,12 @@ class Window(QMainWindow):
     """This is a standart ProjectHub visual window element."""
     def __init__(self):
         super().__init__()
+        self.db_handler = DatabaseHandler("__database__/database.db")
 
         # variables
         self.USER_ID = 1
         self.PROJECT_ID = 1
+        self.LAST_UPDATE = time.time()
 
         # configuring self ...
         self.setObjectName("window")
@@ -60,8 +62,16 @@ class Window(QMainWindow):
 
         # timer
         self.timer = QTimer()
-        self.timer.timeout.connect(self.update_workpace)
+        self.timer.timeout.connect(self.__handle_updates)
         self.timer.start(1000)
+
+    def __handle_updates(self):
+        update = self.db_handler.check_update(self.LAST_UPDATE)
+
+        if update[0]:
+            print("Recived remote update request. Updating UI now...")
+            self.update_workpace()
+            self.LAST_UPDATE = update[1]
 
     def create_workspace(self):
         # workspace: sidebar

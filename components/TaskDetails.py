@@ -1,5 +1,3 @@
-import time
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QDate
 from copy import copy
@@ -58,7 +56,7 @@ class TaskDetails(QWidget):
         self.priority_selector.addItem(Priority.emojify(Priority.VERY_LOW)  + " Very Low")
 
         self.due_date_label = QLabel("Due Date")
-        self.due_date_text = QLineEdit(time.strftime("%d.%B.%y", time.gmtime(self.task.due_date)))
+        self.due_date_text = QLineEdit(self.task.due_date)
 
         self.asignee_label = QLabel("Asignee")
         self.asignee_text = QLineEdit(str(self.task.asignee_id))

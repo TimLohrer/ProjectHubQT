@@ -84,32 +84,44 @@ class DatabaseHandler():
             connection.close()  # safley terminate the connection
             return (False, exception)
 
+    def check_update(self, timestamp: int) -> tuple:
+        answer = self.query(f"SELECT username FROM User WHERE ID = 0;")
+        new_timestamp = int(answer[1][0][0].split("=")[1])
+
+        return (new_timestamp > timestamp, new_timestamp)
+
+    def __update(self):
+        self.query(f"UPDATE User SET username = 'update={ int(time.time()) }' WHERE ID = 0;")
+
     # specialized
     def select(self, table: object, object: object = None, **kwargs) -> list:
         # inquiry
         condition = self.__convert_defintion_based(table, **kwargs)
-        answer = self.query(f"SELECT * FROM { table.name }" + (";" if len(kwargs) == 0 else f" WHERE { " AND ".join(condition) };"))
+        answer = self.query(f"SELECT * FROM { table.name }" + (";" if len(kwargs) == 0 else f" WHERE { ' AND '.join(condition) };"))
 
         # answer formatting (either direct answer or object formatted answer (**kwargs))
         return answer[1] if object is None else [object(**self.__convert_python_based(table, *args)) for args in answer[1]]
 
     def insert(self, table: object, **kwargs):
+        self.__update()
         # inquiry
         variables = self.__convert_order_based(table, **kwargs)
-        answer = self.query(f"INSERT INTO { table.name } ({ ", ".join(variables["names"]) }) VALUES ({ ", ".join(variables["values"]) });")
+        answer = self.query(f"INSERT INTO { table.name } ({ ', '.join(variables['names']) }) VALUES ({ ', '.join(variables['values']) });")
 
     def update(self, table: object, id: int, **kwargs):
+        self.__update()
         # inquiry
         variables = self.__convert_defintion_based(table, **kwargs)
-        answer = self.query(f"UPDATE { table.name } SET { ",".join(variables) } WHERE ID = { id };")
+        answer = self.query(f"UPDATE { table.name } SET { ','.join(variables) } WHERE ID = { id };")
 
     def delete(self, table: object, id: int):
+        self.__update()
         # inquiry
         answer = self.query(f"DELETE FROM { table.name } WHERE ID = { id };")
 
     # __private
     def __convert_defintion_based(self, table: object, **kwargs) -> list:
-        return [f"{ table.arguments[argument]["col_name"] } = { str(kwargs[argument]) }" for argument in table.arguments.keys() if argument in kwargs and kwargs[argument] is not None]
+        return [f"{ table.arguments[argument]['col_name'] } = { str(kwargs[argument]) }" for argument in table.arguments.keys() if argument in kwargs and kwargs[argument] is not None]
 
     def __convert_order_based(self, table: object, **kwargs) -> tuple:
         return {
@@ -160,7 +172,7 @@ class Tasks():
             "col_name": "createDate"
         },
         "due_date": {
-            "type": int,
+            "type": str,
             "col_name": "dueDate"
         },
         "status": {
