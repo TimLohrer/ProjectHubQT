@@ -90,8 +90,8 @@ class DatabaseHandler():
         condition = self.__convert_defintion_based(table, **kwargs)
         answer = self.query(f"SELECT * FROM { table.name }" + (";" if len(kwargs) == 0 else f" WHERE { " AND ".join(condition) };"))
 
-        # answer formatting (either direct answer or object formatted answer)
-        return answer[1] if object is None else [object(*row) for row in answer[1]]
+        # answer formatting (either direct answer or object formatted answer (**kwargs))
+        return answer[1] if object is None else [object(**self.__convert_python_based(table, *args)) for args in answer[1]]
 
     def insert(self, table: object, **kwargs):
         # inquiry
@@ -117,6 +117,9 @@ class DatabaseHandler():
             "values": [str(kwargs[argument]) for argument in table.arguments.keys() if argument in kwargs and kwargs[argument] is not None]
         }
 
+    def __convert_python_based(self, table: object, *args) -> set:
+        return {list(table.arguments.keys())[arg_index]: list(table.arguments.values())[arg_index]["type"](args[arg_index]) if args[arg_index] is not None else None for arg_index in range(len(args))}
+
 
 class Tasks():
     arguments = {
@@ -128,13 +131,13 @@ class Tasks():
             "type": int,
             "col_name": "projectID"
         },
-        "creator_id": {
-            "type": int,
-            "col_name": "creatorID"
+        "type": {
+            "type": str,
+            "col_name": "type"
         },
-        "asignee_id": {
-            "type": int,
-            "col_name": "asigneeID"
+        "priority": {
+            "type": str,
+            "col_name": "priority"
         },
         "title": {
             "type": str,
@@ -144,25 +147,25 @@ class Tasks():
             "type": str,
             "col_name": "description"
         },
-        "type": {
-            "type": str,
-            "col_name": "type"
+        "creator_id": {
+            "type": int,
+            "col_name": "creatorID"
         },
-        "status": {
-            "type": str,
-            "col_name": "status"
+        "asignee_id": {
+            "type": int,
+            "col_name": "asigneeID"
         },
-        "priority": {
-            "type": str,
-            "col_name": "priority"
+        "create_date": {
+            "type": int,
+            "col_name": "createDate"
         },
         "due_date": {
             "type": int,
             "col_name": "dueDate"
         },
-        "create_date": {
-            "type": int,
-            "col_name": "createDate"
+        "status": {
+            "type": str,
+            "col_name": "status"
         }
     }
 
@@ -277,7 +280,7 @@ class Users():
 
 # === TESTING PRUPOSES ONLY ===
 def main():
-    ACCESS_MODE = False
+    ACCESS_MODE = True
 
     try:
         database = DatabaseHandler(input("Enter path to database: "))
@@ -294,9 +297,6 @@ def main():
         else:
             # code here ...
             pass
-            print(database.tasks.fetch(project_id=3, status="BACKLOG"))
-            print(database.projects.fetch())
-            # print(database.users.fetch())
 
     except KeyboardInterrupt:
         pass
