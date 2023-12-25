@@ -19,7 +19,7 @@ class ComponentStruct():
         self.leader_id   = leader_id
 
 class TaskStruct():
-    def __init__(self, id: int, project_id: int, creator_id: int, create_date: int, type: str = "TASK", priority: str = "MEDIUM", title: str = "", description: str = "", asignee_id: int = "", due_date: str = "", status: str = "BACKLOG"):
+    def __init__(self, id: int, project_id: int, creator_id: int, create_date: int, type: str = "TASK", priority: str = "MEDIUM", title: str = "", description: str = "", asignee_id: int = -1, due_date: str = "", status: str = "BACKLOG"):
         self.id            = id
         self.project_id    = project_id
         self.type          = type

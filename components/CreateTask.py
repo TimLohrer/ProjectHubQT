@@ -1,3 +1,4 @@
+import time
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QDate
 from copy import copy
@@ -7,11 +8,11 @@ from components.TitleBar import TitleBar
 from config.Type import Type
 from config.Status import Status
 from config.Priority import Priority
-from config.structs import Task, User
+from config.structs import TaskStruct
 from database.handler import DatabaseHandler
 
 class CreateTask(QWidget):
-    def __init__(self):
+    def __init__(self, window):
         """This is a standart ProjectHub visual task element.
 
 			Args:
@@ -22,17 +23,26 @@ class CreateTask(QWidget):
 
         # configuring self ...
         self.setFixedSize(800, 800)
-        self.task = Task()
-        self.show_save_button = False
+        self.window = window
+        self.task = TaskStruct(id=0, project_id=0, creator_id=self.window.USER_ID, create_date=0)
+        self.gray_create_button = False
+        self.asignee = -1
+        self.projects = self.db_handler.projects.fetch()
 
         # creating elements
         self.main_layout = QVBoxLayout()
-        self.title_bar = TitleBar(self, f"Edit Task", False, False)
+        self.title_bar = TitleBar(self, f"Create Task", False, False)
 
         self.title_text = QLineEdit(self.task.title)
 
         self.description_label = QLabel("Description")
         self.description_text = QTextEdit(self.task.description)
+
+        self.project_label = QLabel("Project")
+        self.project_selector = QComboBox(self)
+        self.project_selector.addItem("Select a project...")
+        for project in self.projects:
+            self.project_selector.addItem(project.name)
 
         self.type_label = QLabel("Type")
         self.type_selector = QComboBox(self)
@@ -59,13 +69,12 @@ class CreateTask(QWidget):
         self.due_date_text = QLineEdit(self.task.due_date)
 
         self.asignee_label = QLabel("Asignee")
-        self.asignee_text = QLineEdit(str(self.task.asignee_id))
+        self.asignee_text = QLineEdit("")
 
         self.creator_label = QLabel("Creator")
-        self.creator_text = QLabel(str(self.task.creator_id))
+        self.creator_text = QLabel("You")
 
-        self.delete_button = QPushButton("Delete")
-        self.save_button = QPushButton("Save")
+        self.create_button = QPushButton("Create")
 
         # configuring the elements
         self.main_layout.setAlignment(Qt.AlignTop)
@@ -78,17 +87,22 @@ class CreateTask(QWidget):
         self.description_text.setPlaceholderText("Enter a description...")
         self.description_text.textChanged.connect(self.update_description)
 
-        self.type_selector.setCurrentText(Type().emojify(task.type) + " " + Type().stringify(task.type))
+        self.type_selector.setCurrentText("Select a project...")
+        self.project_selector.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
+        self.project_selector.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
+        self.project_selector.currentIndexChanged.connect(self.update_project)
+
+        self.type_selector.setCurrentText(Type().emojify(self.task.type) + " " + Type().stringify(self.task.type))
         self.type_selector.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
         self.type_selector.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
         self.type_selector.currentIndexChanged.connect(self.update_type)
 
-        self.status_selector.setCurrentText(Status().emojify(task.status) + " " + Status().stringify(task.status))
+        self.status_selector.setCurrentText(Status().emojify(self.task.status) + " " + Status().stringify(self.task.status))
         self.status_selector.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
         self.status_selector.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
         self.status_selector.currentIndexChanged.connect(self.update_status)
 
-        self.priority_selector.setCurrentText(Priority().emojify(task.priority) + " " + Priority().stringify(task.priority))
+        self.priority_selector.setCurrentText(Priority().emojify(self.task.priority) + " " + Priority().stringify(self.task.priority))
         self.priority_selector.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
         self.priority_selector.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
         self.priority_selector.currentIndexChanged.connect(self.update_priority)
@@ -102,11 +116,9 @@ class CreateTask(QWidget):
         self.creator_text.enterEvent = lambda event: self.setCursor(Qt.ForbiddenCursor)
         self.creator_text.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
 
-        self.delete_button.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
-        self.delete_button.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
-
-        self.save_button.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
-        self.save_button.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
+        self.create_button.enterEvent = lambda event: self.setCursor(Qt.PointingHandCursor)
+        self.create_button.leaveEvent = lambda event: self.setCursor(Qt.ArrowCursor)
+        self.create_button.clicked.connect(self.create)
 
         # styling
         self.setStyleSheet(f"background-color: { Colors.background }; color: white;")
@@ -142,6 +154,10 @@ class CreateTask(QWidget):
 
         dropdown_css = dropdown_css.replace("{{ background }}", Colors.background).replace("{{ second-background }}", Colors.second_background).replace("{{ blue }}", Colors.blue)
 
+        self.project_label.setFixedHeight(20)
+        self.project_label.setStyleSheet(field_name_css)
+        self.project_selector.setStyleSheet(dropdown_css)
+
         self.type_label.setFixedHeight(20)
         self.type_label.setStyleSheet(field_name_css)
         self.type_selector.setStyleSheet(dropdown_css)
@@ -172,14 +188,9 @@ class CreateTask(QWidget):
         opacity.setOpacity(0.75)
         self.creator_text.setGraphicsEffect(opacity)
 
-        self.delete_button.setStyleSheet(f"background-color: { Colors.red }; color: { Colors.background }; font-weight: bold; border-radius: 5px; padding: 5px;")
-        self.delete_button.setFixedHeight(33)
-        self.delete_button.setFixedWidth(90)
-
-        self.save_button.setStyleSheet(f"background-color: { Colors.green }; color: { Colors.background }; font-weight: bold; border-radius: 5px; padding: 5px;")
-        self.save_button.setFixedHeight(33)
-        self.save_button.setFixedWidth(80)
-        self.save_button.hide()
+        self.create_button.setStyleSheet(f"background-color: { Colors.green }; color: { Colors.background }; font-weight: bold; border-radius: 5px; padding: 5px;")
+        self.create_button.setFixedHeight(33)
+        self.create_button.setFixedWidth(80)
 
         # adding elements
         self.setLayout(self.main_layout)
@@ -188,6 +199,9 @@ class CreateTask(QWidget):
         self.main_layout.addSpacing(2)
         self.main_layout.addWidget(self.description_label)
         self.main_layout.addWidget(self.description_text)
+        self.main_layout.addSpacing(5)
+        self.main_layout.addWidget(self.project_label)
+        self.main_layout.addWidget(self.project_selector)
         self.main_layout.addSpacing(5)
         self.main_layout.addWidget(self.type_label)
         self.main_layout.addWidget(self.type_selector)
@@ -207,44 +221,90 @@ class CreateTask(QWidget):
         self.main_layout.addWidget(self.creator_label)
         self.main_layout.addWidget(self.creator_text)
         self.main_layout.addSpacing(10)
-        self.main_layout.addWidget(self.delete_button, 0, Qt.AlignBottom)
-        self.main_layout.addWidget(self.save_button, 0, Qt.AlignBottom)
+        self.main_layout.addWidget(self.create_button, 0, Qt.AlignBottom)
+
+        # set create button to gray initially
+        self.check_create_button_visibility()
 
     def update_title(self, new_title):
         self.task.title = new_title
-        self.check_save_button_visibility()
+        self.check_create_button_visibility()
 
     def update_description(self):
         self.task.description = self.description_text.toPlainText()
-        self.check_save_button_visibility()
+        self.check_create_button_visibility()
+
+    def update_project(self):
+        if self.project_selector.currentText() == "Select a project...":
+            self.task.project_id = 0
+            self.check_create_button_visibility()
+        try:
+            self.task.project_id = self.db_handler.projects.fetch(name=self.project_selector.currentText())[0].id
+            self.check_create_button_visibility()
+        except Exception as e:
+            print(e)
 
     def update_type(self):
-        self.task.type = Type().parse(self.type_selector.currentText().split(" ")[1])
-        self.check_save_button_visibility()
+        self.task.type = Type.parse(" ".join(self.type_selector.currentText().split(" ")[1:]))
+        self.check_create_button_visibility()
 
     def update_status(self):
-        self.task.status = Status().parse(self.status_selector.currentText().split(" ")[1])
-        self.check_save_button_visibility()
+        self.task.status = Status.parse(" ".join(self.status_selector.currentText().split(" ")[1:]))
+        self.check_create_button_visibility()
 
     def update_priority(self):
-        self.task.priority = Priority().parse(self.priority_selector.currentText().split(" ")[1])
-        self.check_save_button_visibility()
+        self.task.priority = Priority.parse(" ".join(self.priority_selector.currentText().split(" ")[1:]))
+        self.check_create_button_visibility()
 
     def update_due_date(self, new_due_date):
         if new_due_date == "":
             new_due_date = None # set empty due date to None to match previous state (NULL in db)
         self.task.due_date = new_due_date
-        self.check_save_button_visibility()
+        self.check_create_button_visibility()
 
     def update_asignee(self, new_asignee):
         if new_asignee == "":
-            new_asignee = -1 # set asignee to -1 if empty to raise error on save if it stays empty
-        self.task.asignee_id = int(new_asignee)
-        self.check_save_button_visibility()
+            new_asignee = -1 # set asignee to -1 if empty to raise error on create if it stays empty
+        self.asignee = new_asignee
+        self.check_create_button_visibility()
 
-    def check_save_button_visibility(self):
-        hide = (self.task.title == self.original_task.title and self.task.title != "") and (self.task.description == self.original_task.description) and (self.task.type == self.original_task.type) and (self.task.status == self.original_task.status) and (self.task.priority == self.original_task.priority) and (self.task.due_date == self.original_task.due_date) and (self.task.asignee_id == self.original_task.asignee_id)
-        if not hide:
-            self.save_button.show()
+    def check_create_button_visibility(self):
+        gray = (self.task.title == "") or (self.task.project_id == 0)
+        opacity = QGraphicsOpacityEffect()
+        if not gray:
+            opacity.setOpacity(1.0)
         else:
-            self.save_button.hide()
+            opacity.setOpacity(0.75)
+        self.create_button.setGraphicsEffect(opacity)
+        return not gray
+
+    def validate_inputs(self) -> bool:
+        if self.asignee == -1:
+            self.task.asignee_id = self.asignee
+            return True
+        try:
+            asignee = self.db_handler.users.fetch(username=self.asignee)[0]
+            self.task.asignee_id = asignee.id
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def create(self):
+        if not self.validate_inputs() or not self.check_create_button_visibility():
+            return
+        self.task.create_date = time.time()
+        self.db_handler.tasks.create(
+            project_id=self.task.project_id,
+			creator_id=self.task.creator_id,
+			asignee_id=self.task.asignee_id,
+			title=self.task.title,
+			description=self.task.description,
+			type=self.task.type,
+			status=self.task.status,
+			priority=self.task.priority,
+			due_date=self.task.due_date,
+            create_date=time.time()
+        )
+        self.window.update_workpace()
+        self.hide()

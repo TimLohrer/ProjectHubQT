@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 
 from database.handler import DatabaseHandler
 from config.Colors import Colors
+from components.CreateTask import CreateTask
 
 class Sidebar(QFrame):
 	def __init__(self, window: object, projects: list):
@@ -48,15 +49,5 @@ class Sidebar(QFrame):
 			self.projects_container_layout.addWidget(project)
 
 	def createTask(self):
-		self.db_handler.tasks.create(
-			project_id=1,
-			creator_id=1,
-			asignee_id=1,
-			title="ABC",
-			description="DEV",
-			type="TASK",
-			status="BACKLOG",
-			priority="VERY_HIGH",
-			due_date=0
-		)
-		self.window.update_workpace()
+		create_task = CreateTask(self.window)
+		create_task.show()

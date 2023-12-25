@@ -20,14 +20,14 @@ def secure(arguments: dict):
 
 def safe_string(string: str):
     # SQL injection prevention
-    string.replace("'", '%27')
-    string.replace('"', '%22')
-    string.replace('`', '%60')
+    string = string.replace("'", '%27')
+    string = string.replace('"', '%22')
+    string = string.replace('`', '%60')
 
     # XSS prevention
-    string.replace("<", '%8B')
-    string.replace(">", '%9B')
-    string.replace("/", '%F7')
+    string = string.replace("<", '%8B')
+    string = string.replace(">", '%9B')
+    string = string.replace("/", '%F7')
 
     safe_string = f"'{ string }'"
 
@@ -63,24 +63,28 @@ class DatabaseHandler():
             answer = answer.fetchall()
             connection.commit()
 
+            answer = [list(row) for row in answer]
+
             # reformatting all possible sql injection attempts
-            for row in answer:
-                for column in row:
-                    if type(column) == str:
+            for row_index in range(len(answer)):
+                for column_index in range(len(answer[row_index])):
+                    if isinstance(answer[row_index][column_index], str):
+
                         # SQL injection prevention
-                        column.replace('%27', "'")
-                        column.replace('%22', '"')
-                        column.replace('%60', '`')
+                        answer[row_index][column_index] = answer[row_index][column_index].replace('%27', "'")
+                        answer[row_index][column_index] = answer[row_index][column_index].replace('%22', '"')
+                        answer[row_index][column_index] = answer[row_index][column_index].replace('%60', '`')
 
                         # XSS prevention
-                        column.replace('%8B', "<")
-                        column.replace('%9B', ">")
-                        column.replace('%F7', "/")
+                        answer[row_index][column_index] = answer[row_index][column_index].replace('%8B', "<")
+                        answer[row_index][column_index] = answer[row_index][column_index].replace('%9B', ">")
+                        answer[row_index][column_index] = answer[row_index][column_index].replace('%F7', "/")
 
             connection.close()  # safley terminate the connection
             return (True, answer)
 
         except Exception as exception:
+            print(exception)
             connection.close()  # safley terminate the connection
             return (False, exception)
 
@@ -188,8 +192,12 @@ class Tasks():
         self.name = "Task"
 
     @secure(arguments)
-    def fetch(self, project_id: int, status: str, object: object = None if __name__ == "__main__" else TaskStruct):
-        return self.db_handler.select(self, object, project_id=project_id, status=status)
+    def fetch(self, object: object = None if __name__ == "__main__" else TaskStruct, **kwargs):
+        return self.db_handler.select(self, object, **kwargs)
+
+    @secure(arguments)
+    def fetch_all(self, object: object = None if __name__ == "__main__" else TaskStruct):
+        return self.db_handler.select(self, object)
 
     @secure(arguments)
     def create(self, **kwargs):
@@ -226,7 +234,11 @@ class Projects():
         self.name = "Project"
 
     @secure(arguments)
-    def fetch(self, object: object = None if __name__ == "__main__" else ProjectStruct):
+    def fetch(self, object: object = None if __name__ == "__main__" else ProjectStruct, **kwargs):
+        return self.db_handler.select(self, object, **kwargs)
+
+    @secure(arguments)
+    def fetch_all(self, object: object = None if __name__ == "__main__" else TaskStruct):
         return self.db_handler.select(self, object)
 
     @secure(arguments)
@@ -272,8 +284,12 @@ class Users():
         self.name = "User"
 
     @secure(arguments)
-    def fetch(self, id: int, object: object = None if __name__ == "__main__" else UserStruct):
-        return self.db_handler.select(self, object, id=id)
+    def fetch(self, object: object = None if __name__ == "__main__" else UserStruct, **kwargs):
+        return self.db_handler.select(self, object, **kwargs)
+
+    @secure(arguments)
+    def fetch_all(self, object: object = None if __name__ == "__main__" else UserStruct):
+        return self.db_handler.select(self, object)
 
     @secure(arguments)
     def create(self, **kwargs):
