@@ -30,6 +30,7 @@ class Sidebar(QFrame):
 		self.scroll_area = QScrollArea(self)
 		self.projects_container_widget = QWidget(self.scroll_area)
 		self.projects_container_layout = QVBoxLayout(self.projects_container_widget)
+		self.signed_in_as_label = QLabel("Signed in as")
 		self.user_label = QLabel(f"{ self.user.firstname } { self.user.surname }")
 		self.switch_account_button = QPushButton("Switch Account")
 
@@ -47,6 +48,8 @@ class Sidebar(QFrame):
 		self.create_task_button.setStyleSheet(f"background-color: { Colors.green }; color: { Colors.background }; font-weight: bold; border-radius: 5px; padding: 10px;")
 		self.create_project_button.setStyleSheet(f"background-color: { Colors.blue }; color: white; font-weight: bold; border-radius: 5px; padding: 10px;")
 		self.scroll_area.setStyleSheet("QScrollArea { margin-top: 10px; }")
+		self.signed_in_as_label.setFixedHeight(20)
+		self.signed_in_as_label.setStyleSheet("font-size: 14px;padding: 0px; margin-left: 3px;")
 		self.user_label.setStyleSheet(f"color: white; font-size: 20px; font-weight: bold; margin-bottom: 10px;")
 		self.switch_account_button.setStyleSheet(f"background-color: { Colors.blue }; color: white; font-weight: bold; border-radius: 5px; padding: 10px;")
 
@@ -56,6 +59,7 @@ class Sidebar(QFrame):
 		self.main_layout.addSpacing(3)
 		self.main_layout.addWidget(self.create_project_button)
 		self.main_layout.addWidget(self.scroll_area)
+		self.main_layout.addWidget(self.signed_in_as_label, 0, Qt.AlignBottom)
 		self.main_layout.addWidget(self.user_label, 0, Qt.AlignBottom)
 		self.main_layout.addWidget(self.switch_account_button, 0, Qt.AlignBottom)
 
