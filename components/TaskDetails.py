@@ -7,7 +7,6 @@ from components.TitleBar import TitleBar
 from config.Type import Type
 from config.Status import Status
 from config.Priority import Priority
-from database.handler import DatabaseHandler
 
 class TaskDetails(QWidget):
     def __init__(self, task, asignee, window):
@@ -17,7 +16,7 @@ class TaskDetails(QWidget):
 		"""
         super().__init__() # init QWidget (parent class)
 
-        self.db_handler = DatabaseHandler("__database__/database.db")
+        self.db_handler = window.db_handler
 
         # configuring self ...
         self.setFixedSize(800, 800)
@@ -152,6 +151,7 @@ class TaskDetails(QWidget):
                 padding: 5px;
             }
         """
+
         self.title_text.setStyleSheet("font-size: 25px; font-weight: bold; border: 0px;")
 
         field_name_css = "font-size: 13px; font-weight: bold; padding: 0px; margin: 0px;"

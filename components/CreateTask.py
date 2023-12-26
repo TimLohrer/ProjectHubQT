@@ -19,7 +19,7 @@ class CreateTask(QWidget):
 		"""
         super().__init__() # init QWidget (parent class)
 
-        self.db_handler = DatabaseHandler("__database__/database.db")
+        self.db_handler = window.db_handler
 
         # configuring self ...
         self.setFixedSize(800, 800)
@@ -33,6 +33,7 @@ class CreateTask(QWidget):
         self.main_layout = QVBoxLayout()
         self.title_bar = TitleBar(self, f"Create Task", False, False)
 
+        self.name_label = QLabel("Name")
         self.title_text = QLineEdit(self.task.title)
 
         self.description_label = QLabel("Description")
@@ -143,9 +144,11 @@ class CreateTask(QWidget):
                 padding: 5px;
             }
         """
-        self.title_text.setStyleSheet("font-size: 25px; font-weight: bold; border: 0px;")
-
         field_name_css = "font-size: 13px; font-weight: bold; padding: 0px; margin: 0px;"
+
+        self.name_label.setFixedHeight(20)
+        self.name_label.setStyleSheet(field_name_css)
+        self.title_text.setStyleSheet("font-size: 25px; font-weight: bold; border: 0px;")
 
         self.description_label.setFixedHeight(20)
         self.description_label.setStyleSheet(field_name_css)
@@ -195,6 +198,7 @@ class CreateTask(QWidget):
         # adding elements
         self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.title_bar)
+        self.main_layout.addWidget(self.name_label)
         self.main_layout.addWidget(self.title_text)
         self.main_layout.addSpacing(2)
         self.main_layout.addWidget(self.description_label)

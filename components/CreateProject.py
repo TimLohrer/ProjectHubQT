@@ -19,10 +19,10 @@ class CreateProject(QWidget):
 		"""
         super().__init__() # init QWidget (parent class)
 
-        self.db_handler = DatabaseHandler("__database__/database.db")
+        self.db_handler = window.db_handler
 
         # configuring self ...
-        self.setFixedSize(600, 300)
+        self.setFixedSize(600, 320)
         self.window = window
         self.project = ProjectStruct(id=0)
         self.gray_create_button = False
@@ -31,6 +31,7 @@ class CreateProject(QWidget):
         self.main_layout = QVBoxLayout()
         self.title_bar = TitleBar(self, f"Create Project", False, False)
 
+        self.name_label = QLabel("Name")
         self.name_text = QLineEdit(self.project.name)
 
         self.description_label = QLabel("Description")
@@ -56,9 +57,11 @@ class CreateProject(QWidget):
         # styling
         self.setStyleSheet(f"background-color: { Colors.background }; color: white;")
 
-        self.name_text.setStyleSheet("font-size: 25px; font-weight: bold; border: 0px;")
-
         field_name_css = "font-size: 13px; font-weight: bold; padding: 0px; margin: 0px;"
+
+        self.name_label.setFixedHeight(20)
+        self.name_label.setStyleSheet(field_name_css)
+        self.name_text.setStyleSheet("font-size: 25px; font-weight: bold; border: 0px;")
 
         self.description_label.setFixedHeight(20)
         self.description_label.setStyleSheet(field_name_css)
@@ -72,6 +75,7 @@ class CreateProject(QWidget):
         # adding elements
         self.setLayout(self.main_layout)
         self.main_layout.addWidget(self.title_bar)
+        self.main_layout.addWidget(self.name_label)
         self.main_layout.addWidget(self.name_text)
         self.main_layout.addSpacing(5)
         self.main_layout.addWidget(self.description_label)

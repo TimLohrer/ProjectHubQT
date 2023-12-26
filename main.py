@@ -109,6 +109,10 @@ class Window(QMainWindow):
         self.PROJECT_ID = new_project
         self.update_workpace()
 
+    def switch_user(self, new_user):
+        self.USER_ID = new_user
+        self.update_workpace()
+
 
 
 def main():

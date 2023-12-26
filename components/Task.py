@@ -17,7 +17,7 @@ class Task(QFrame):
 		"""
         super().__init__() # init QFrame (parent class)
 
-        self.db_handler = DatabaseHandler("__database__/database.db")
+        self.db_handler = window.db_handler
 
         # configuring self ...
         self.setObjectName("task")
