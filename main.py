@@ -79,9 +79,9 @@ class Window(QMainWindow):
 
         # workspace: lists
         self.list_widget_0 = TaskList(f"{ Status.emojify(Status.BACKLOG) } { Status.stringify(Status.BACKLOG) }", fetch_tasks(self, Status.BACKLOG))
-        self.list_widget_1 = TaskList(f"{ Status.emojify(Status.TODO) } { Status.stringify(Status.TODO) }",       fetch_tasks(self, Status.TODO))
+        self.list_widget_1 = TaskList(f"{ Status.emojify(Status.TODO)    } { Status.stringify(Status.TODO)    }", fetch_tasks(self, Status.TODO))
         self.list_widget_2 = TaskList(f"{ Status.emojify(Status.IN_PROGRESS) } { Status.stringify(Status.IN_PROGRESS) }", fetch_tasks(self, Status.IN_PROGRESS))
-        self.list_widget_3 = TaskList(f"{ Status.emojify(Status.DONE) } { Status.stringify(Status.DONE) }",       fetch_tasks(self, Status.DONE))
+        self.list_widget_3 = TaskList(f"{ Status.emojify(Status.DONE)    } { Status.stringify(Status.DONE)    }", fetch_tasks(self, Status.DONE))
 
         # adding: sidebar
         self.horizontal_layout.addWidget(self.sidebar)

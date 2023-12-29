@@ -19,7 +19,7 @@ class SwitchAccount(QWidget):
         self.setFixedSize(400, 400)
         self.window = window
 
-        self.users = [UserItem(self.window, self, user, user.id == self.window.USER_ID) for user in self.db_handler.users.fetch_all()]
+        self.users = [UserItem(self.window, self, user, user.id == self.window.USER_ID) for user in self.db_handler.users.fetch()]
 
         # creating elements
         self.main_layout = QVBoxLayout()
