@@ -28,7 +28,7 @@ class Sidebar(QFrame):
 		self.create_task_button = QPushButton("Create Task")
 		self.create_project_button = QPushButton("Create Project")
 		self.scroll_area = QScrollArea(self)
-		self.projects_container_widget = QWidget(self.scroll_area)
+		self.projects_container_widget = QWidget()
 		self.projects_container_layout = QVBoxLayout(self.projects_container_widget)
 		self.signed_in_as_label = QLabel("Signed in as")
 		self.user_label = QLabel(f"{ self.user.firstname } { self.user.surname }")
@@ -38,9 +38,12 @@ class Sidebar(QFrame):
 		self.main_layout.setAlignment(Qt.AlignTop)
 		self.create_task_button.clicked.connect(self.create_task)
 		self.create_project_button.clicked.connect(self.create_project)
+		self.scroll_area.setWidget(self.projects_container_widget)
 		self.scroll_area.setWidgetResizable(True)
 		self.scroll_area.setFixedWidth(200)
-		self.scroll_area.setMinimumHeight(350)
+		self.scroll_area.setFixedHeight(500)
+		self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.switch_account_button.clicked.connect(self.switch_account)
 
 		#styling

@@ -19,7 +19,7 @@ class TaskList(QWidget):
         self.scroll_area = QScrollArea(self)
 
         self.list_title = QLabel(name + f" ({ len(tasks) })")
-        self.container_widget = QWidget(self.scroll_area)
+        self.container_widget = QWidget()
         self.container_layout = QVBoxLayout(self.container_widget)
 
         # configuring the elements
@@ -27,6 +27,9 @@ class TaskList(QWidget):
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFixedWidth(350)
         self.container_layout.setAlignment(Qt.AlignTop)
+        self.scroll_area.setWidget(self.container_widget)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # styling
         self.scroll_area.setStyleSheet(f"background-color: { Colors.second_background }; border-radius: 7.5px")

@@ -30,7 +30,7 @@ class TitleBar(QWidget):
 
         self.min_button.setIcon(QIcon('assets/min.png'))
         self.nor_button.setIcon(QIcon('assets/nor.png'))
-        self.close_button.setIcon(QIcon('assets/min.png'))
+        self.close_button.setIcon(QIcon('assets/close.png'))
 
         self.min_button.clicked.connect(self.window_show_minimized)
         self.nor_button.clicked.connect(self.window_show_normilized)
@@ -49,10 +49,7 @@ class TitleBar(QWidget):
         self.setStyleSheet(f"background-color: { Colors.second_background }; padding: 0px; border: 4px solid { Colors.second_background }")
 
         self.title.setStyleSheet("font-weight: 700; font-size: 12px;")
-
-        self.min_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
-        self.nor_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
-        self.close_button.setStyleSheet("border: 2px solid white; border-radius: 12px;")
+        
 
     def window_show_minimized(self):
         self.window.showMinimized()
