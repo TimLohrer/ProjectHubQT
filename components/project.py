@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from config.Colors import Colors
+from components.ProjectDetails import ProjectDetails
 
 class Project(QFrame):
 	def __init__(self, window: object, project: object, active: bool = False):
@@ -16,6 +17,7 @@ class Project(QFrame):
         # configuring self ...
 		self.setObjectName("project")
 		self.setFixedWidth(200)
+		self.setFixedHeight(35)
 
         # creating elements
 		self.main_layout = QVBoxLayout(self)
@@ -33,6 +35,10 @@ class Project(QFrame):
 		self.main_layout.addWidget(self.title_label)
 
     # DON'T TOUCH: this needs to stay in camel as pyqt is trying to access QFrame.mouseReleaseEvent
-	def mouseReleaseEvent(self, event):
-		self.window.switch_project(self.project.id)
+	def mousePressEvent(self, event):
+		if event.button() == Qt.LeftButton:
+			self.window.switch_project(self.project.id)
+		elif event.button() == Qt.RightButton:
+			details = ProjectDetails(self.project, self.window)
+			details.show()
 
