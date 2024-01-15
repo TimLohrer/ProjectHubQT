@@ -28,6 +28,7 @@ class Task(QFrame):
         self.task = copy(task)
         self.asignee = None
         self.asignee_name = ""
+        self.current_user = self.db_handler.users.fetch(id=self.window.USER_ID)[0]
         try:
             self.asignee = self.db_handler.users.fetch(id=self.task.asignee_id)[0]
         except Exception as e:
@@ -41,6 +42,8 @@ class Task(QFrame):
              self.asignee_name = "No Asignee"
         elif len(f"{ self.asignee.firstname } { self.asignee.surname }") > 17:
             self.asignee_name = f"{ self.asignee.firstname } { self.asignee.surname }"[0:17] + "..."
+        elif self.asignee.id == self.current_user.id:
+            self.asignee_name = "You"
         else:
             self.asignee_name = f"{ self.asignee.firstname } { self.asignee.surname }"
 
