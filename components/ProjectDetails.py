@@ -97,8 +97,7 @@ class ProjectDetails(QWidget):
         # set create button to gray initially
         self.check_save_button_visibility()
 
-        print(db_handler.projects.fetch())
-        if len(db_handler.projects.fetch()) < 2:
+        if len(self.db_handler.projects.fetch()) < 2:
             self.delete_button.hide()
 
     def update_name(self, new_name):
@@ -127,5 +126,8 @@ class ProjectDetails(QWidget):
 
     def delete(self):
         self.db_handler.projects.delete(id=self.project.id)
+        if self.window.PROJECT_ID == self.project.id:
+            new_project_id = self.db_handler.projects.fetch()[0].id
+            self.window.PROJECT_ID = new_project_id
         self.window.update_workpace()
         self.hide()
