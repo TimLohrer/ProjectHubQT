@@ -12,12 +12,6 @@ class ProjectStruct():
         self.name        = name
         self.description = description
 
-class ComponentStruct():
-    def __init__(self, id: int, leader_id: int, name: str = ""):
-        self.id          = id
-        self.name        = name
-        self.leader_id   = leader_id
-
 class TaskStruct():
     def __init__(self, id: int, project_id: int, creator_id: int, create_date: int, type: str = "TASK", priority: str = "MEDIUM", title: str = "", description: str = "", asignee_id: int = -1, due_date: str = "", status: str = "BACKLOG"):
         self.id            = id

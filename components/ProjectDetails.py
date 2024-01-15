@@ -97,6 +97,10 @@ class ProjectDetails(QWidget):
         # set create button to gray initially
         self.check_save_button_visibility()
 
+        print(db_handler.projects.fetch())
+        if len(db_handler.projects.fetch()) < 2:
+            self.delete_button.hide()
+
     def update_name(self, new_name):
         self.project.name = new_name
         self.check_save_button_visibility()
