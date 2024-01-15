@@ -24,9 +24,12 @@ class Window(QMainWindow):
         super().__init__()
         self.db_handler = DatabaseHandler("__database__/database.db")
 
+        self.projects = db_handler.projects.fetch()
+        self.users = db_handler.users.fetch()
+
         # variables
-        self.USER_ID = 1
-        self.PROJECT_ID = 1
+        self.USER_ID     = self.users[1].id
+        self.PROJECT_ID  = self.projects[0].id
         self.LAST_UPDATE = time.time()
 
         # configuring self ...
