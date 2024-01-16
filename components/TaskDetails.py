@@ -285,6 +285,8 @@ class TaskDetails(QWidget):
             self.save_button.hide()
 
     def validate_inputs(self) -> bool:
+        if self.asignee == "":
+            self.asignee = -1
         if self.asignee == -1:
             self.task.asignee_id = self.asignee
             return True
