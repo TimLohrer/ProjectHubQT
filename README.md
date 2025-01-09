@@ -1,6 +1,9 @@
 # ProjectHubQT
+
 A lightweight project manager in PyQt5.
 In the following, you will find the documentation of the project ProjectHub. The documentation includes the Database Structure, instructions for usage, and changes deviating from the original plan.
+
+Sidenote: This project was part of our year 12 school computer siece class. (Nothing could have made me/us use this if I/we had another choice ⚠️💀) 
 
 ## Table of Contents
 - Database Structure
